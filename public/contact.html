@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-x-hidden scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contact Us | Veloqix Technologies</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js Library for 3D Interactive Model Canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandMaersk: '#00243A',
+                        brandAccent: '#40B2E6',
+                        brandBg: '#F4F5F7',
+                        brandDark: '#0A121A',
+                        brandGold: '#D4AF37'
+                    },
+                    screens: {
+                        'xs': '380px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .maersk-card { 
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        @media (min-width: 768px) {
+            .maersk-card:hover { 
+                transform: translateY(-4px); 
+                box-shadow: 0 15px 30px rgba(0, 36, 58, 0.12); 
+            }
+        }
+        #three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-brandBg text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-brandAccent selection:text-brandMaersk">
+
+    <!-- 1. GLOBAL ANNOUNCEMENT BAR -->
+    <div class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-3 sm:px-6 flex justify-between items-center border-b border-gray-800 relative z-50">
+        <div class="flex items-center gap-2 sm:gap-3 overflow-hidden whitespace-nowrap">
+            <span class="bg-brandAccent text-brandMaersk font-black px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] uppercase tracking-wider shrink-0">Support Status</span>
+            <span class="text-gray-300 truncate">24/7 Enterprise Desk — Average response time under 15 minutes.</span>
+        </div>
+        <div class="hidden md:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0">
+            <span class="hover:text-brandAccent cursor-pointer transition-colors"><i class="fa-solid fa-globe mr-1"></i> Global / English</span>
+            <span class="hover:text-brandAccent cursor-pointer transition-colors"><i class="fa-solid fa-shield-halved mr-1"></i> Escalation Portal</span>
+        </div>
+    </div>
+
+    <!-- 2. MAIN NAVIGATION NAVBAR -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5 flex justify-between items-center">
+            <!-- Brand Logo -->
+            <a href="index.html" class="text-lg sm:text-2xl font-black text-brandMaersk flex items-center gap-1.5 sm:gap-2 tracking-tight">
+                <i class="fa-solid fa-asterisk text-brandAccent text-xl sm:text-3xl"></i> 
+                <span>VELOQIX <span class="text-[9px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded">TECHNOLOGIES</span></span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-bold text-gray-700">
+                <a href="index.html" class="hover:text-brandAccent transition-colors">Home</a>
+                <a href="services.html" class="hover:text-brandAccent transition-colors">Transportation & Services</a>
+                <a href="products.html" class="hover:text-brandAccent transition-colors">Proprietary Software</a>
+                <a href="solutions.html" class="hover:text-brandAccent transition-colors">Enterprise Solutions</a>
+                <a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a>
+                <a href="contact.html" class="text-brandAccent border-b-2 border-brandAccent pb-1">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <div class="flex items-center space-x-2 lg:hidden">
+                <button id="mobileMenuBtn" class="p-2 text-brandMaersk text-xl focus:outline-none" aria-label="Toggle Navigation">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Drawer -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-200 px-5 py-4 space-y-3 font-bold text-sm text-gray-700 shadow-xl">
+            <a href="index.html" class="block py-1 hover:text-brandAccent transition-colors">Home</a>
+            <a href="services.html" class="block py-1 hover:text-brandAccent transition-colors">Transportation & Services</a>
+            <a href="products.html" class="block py-1 hover:text-brandAccent transition-colors">Proprietary Software</a>
+            <a href="solutions.html" class="block py-1 hover:text-brandAccent transition-colors">Enterprise Solutions</a>
+            <a href="about.html" class="block py-1 hover:text-brandAccent transition-colors">About Veloqix</a>
+            <a href="contact.html" class="block text-brandAccent bg-sky-50 px-3 py-2 rounded-lg">Contact</a>
+        </div>
+    </nav>
+
+    <!-- 3. HERO HEADER SECTION WITH INTERACTIVE SUPPORT & TELEMETRY 3D CANVAS -->
+    <section id="heroSection" class="bg-gradient-to-r from-brandMaersk via-[#001D2F] to-[#04101A] text-white py-14 sm:py-20 px-4 sm:px-6 relative overflow-hidden min-h-[380px] sm:min-h-[440px] flex items-center">
+        
+        <!-- Three.js 3D Telemetry Canvas -->
+        <canvas id="three-canvas"></canvas>
+
+        <div class="max-w-7xl mx-auto relative z-10 w-full">
+            <div class="max-w-3xl">
+                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-brandAccent/10 border border-brandAccent/30 text-brandAccent uppercase font-black text-[10px] sm:text-xs tracking-widest mb-3 sm:mb-4">
+                    <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    Connect With Us
+                </span>
+                <h1 class="text-3xl xs:text-4xl sm:text-5xl font-black leading-tight sm:leading-tight tracking-tight mb-3 drop-shadow-md">
+                    Contact Enterprise Sales & Operations Desk
+                </h1>
+                <p class="text-gray-300 text-xs sm:text-base leading-relaxed max-w-2xl">
+                    Have questions about intermodal logistics, workforce sourcing via FN Hub, or MyPGEase software integration? Our team is available 24/7.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. CONTACT & INQUIRY MAIN SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            
+            <!-- Left Column: Enterprise Form connected to Express Node.js Backend -->
+            <div class="lg:col-span-7 bg-white p-5 sm:p-10 rounded-2xl shadow-lg border border-gray-200">
+                <h2 class="text-xl sm:text-2xl font-black text-brandMaersk mb-1.5">Send an Enterprise Inquiry</h2>
+                <p class="text-xs text-gray-500 mb-6">Fill in your requirements below and our dedicated account manager will reach out within 2 hours.</p>
+
+                <!-- Status Message Banner -->
+                <div id="formStatus" class="hidden mb-4 p-3 rounded-lg text-xs font-bold"></div>
+
+                <form id="contactForm" class="space-y-4 sm:space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-extrabold uppercase text-gray-500 mb-1.5">Full Name *</label>
+                            <input type="text" name="fullName" required placeholder="John Doe" class="w-full px-3.5 py-2.5 sm:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-brandMaersk focus:ring-1 focus:ring-brandMaersk transition">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-extrabold uppercase text-gray-500 mb-1.5">Corporate Email *</label>
+                            <input type="email" name="corporateEmail" required placeholder="john@company.com" class="w-full px-3.5 py-2.5 sm:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-brandMaersk focus:ring-1 focus:ring-brandMaersk transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-extrabold uppercase text-gray-500 mb-1.5">Phone Number</label>
+                            <input type="tel" name="phone" placeholder="+91 98765 43210" class="w-full px-3.5 py-2.5 sm:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-brandMaersk focus:ring-1 focus:ring-brandMaersk transition">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-extrabold uppercase text-gray-500 mb-1.5">Department / Inquiry Area</label>
+                            <select name="department" class="w-full px-3.5 py-2.5 sm:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-brandMaersk focus:ring-1 focus:ring-brandMaersk transition bg-white">
+                                <option value="Inland Container Logistics">Inland Container Logistics</option>
+                                <option value="FN Hub Workforce Sourcing">FN Hub Workforce Sourcing</option>
+                                <option value="MyPGEase PropTech SaaS">MyPGEase PropTech SaaS</option>
+                                <option value="Custom API & WMS Integration">Custom API & WMS Integration</option>
+                                <option value="General Corporate Inquiry">General Corporate Inquiry</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-extrabold uppercase text-gray-500 mb-1.5">Message / Requirements *</label>
+                        <textarea name="message" rows="4" required placeholder="How can Veloqix assist your fleet, workforce, or software operations?" class="w-full px-3.5 py-2.5 sm:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-brandMaersk focus:ring-1 focus:ring-brandMaersk transition"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full py-3.5 bg-brandMaersk text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider rounded-lg hover:bg-gray-800 transition shadow-md active:scale-[0.99] flex items-center justify-center gap-2">
+                        <span id="btnText">Submit Official Inquiry</span>
+                        <i class="fa-solid fa-paper-plane" id="btnIcon"></i>
+                    </button>
+                    
+                    <p class="text-[10px] sm:text-xs text-gray-400 text-center flex items-center justify-center gap-1.5 mt-2">
+                        <i class="fa-solid fa-lock text-brandAccent"></i> Your data is secured under Veloqix Enterprise Privacy Policy.
+                    </p>
+                </form>
+            </div>
+
+            <!-- Right Column: Regional Hubs & Contact Cards -->
+            <div class="lg:col-span-5 space-y-4 sm:space-y-6">
+                
+                <!-- Card 1: HQ -->
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-sm maersk-card">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-sky-50 text-brandAccent flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black text-brandAccent uppercase tracking-wider">Corporate Headquarters</span>
+                            <h3 class="font-bold text-sm sm:text-base text-brandMaersk mt-0.5">Veloqix Tech Hub</h3>
+                            <p class="text-xs text-gray-600 mt-1 leading-relaxed">Gurugram, Haryana, India — 122018.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Direct Contacts -->
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-sm maersk-card">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-brandMaersk flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+                        <div class="space-y-2.5">
+                            <span class="text-[10px] font-black text-brandAccent uppercase tracking-wider">Direct Email Channels</span>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Enterprise Sales</p>
+                                <a href="mailto:sales@veloqix.com" class="text-xs font-bold text-brandMaersk hover:text-brandAccent transition-colors">sales@veloqix.com</a>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Technical Support Desk</p>
+                                <a href="mailto:support@veloqix.com" class="text-xs font-bold text-brandMaersk hover:text-brandAccent transition-colors">support@veloqix.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Logistics Corridor Desk -->
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-sm maersk-card">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Logistics Dispatch Hotline</span>
+                            <h3 class="font-bold text-sm sm:text-base text-brandMaersk mt-0.5">Yard & Freight Operations</h3>
+                            <p class="text-xs text-gray-600 mt-1 leading-relaxed">Available 24/7 for active fleet rerouting & urgent shift staffing.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 5. CORPORATE FOOTER -->
+    <footer class="bg-brandMaersk text-white py-10 sm:py-16 border-t border-gray-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+                <div class="text-lg font-black tracking-tight mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-asterisk text-brandAccent text-2xl"></i> VELOQIX
+                </div>
+                <p class="text-gray-400 leading-relaxed">Integrated Freight Logistics, Industrial Workforce Recruitment, and Custom Software Solutions.</p>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-3 uppercase tracking-wider text-xs">Solutions</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="services.html" class="hover:text-brandAccent transition-colors">Intermodal Transport</a></li>
+                    <li><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="hover:text-brandAccent transition-colors">FN Logistic Hub Portal</a></li>
+                    <li><a href="https://pgease.pythonanywhere.com" target="_blank" class="hover:text-brandAccent transition-colors">MyPGEase PropTech</a></li>
+                    <li><a href="solutions.html" class="hover:text-brandAccent transition-colors">Custom SaaS Architecture</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-3 uppercase tracking-wider text-xs">Corporate</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a></li>
+                    <li><a href="contact.html" class="hover:text-brandAccent transition-colors">Enterprise Sales</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition-colors">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-3 uppercase tracking-wider text-xs">Headquarters</h5>
+                <p class="text-gray-400 leading-relaxed mb-2">Veloqix Tech Hub, Gurugram, Haryana, India.</p>
+                <p class="text-gray-400"><i class="fa-solid fa-envelope mr-1 text-brandAccent"></i> contact@veloqix.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-10 pt-6 border-t border-gray-800 text-center text-gray-500">
+            © 2026 Veloqix Technologies. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- SUPPORT TELEMETRY 3D CANVAS SCRIPT (THREE.JS) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('three-canvas');
+            const container = document.getElementById('heroSection');
+
+            if (canvas && container && typeof THREE !== 'undefined') {
+                const scene = new THREE.Scene();
+
+                const getWidth = () => container.clientWidth || window.innerWidth;
+                const getHeight = () => container.clientHeight || 400;
+
+                const camera = new THREE.PerspectiveCamera(60, getWidth() / getHeight(), 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+
+                renderer.setSize(getWidth(), getHeight());
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                const supportGroup = new THREE.Group();
+
+                const sphereGeo = new THREE.IcosahedronGeometry(2.2, 2);
+                const sphereMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true, transparent: true, opacity: 0.5 });
+                const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+                supportGroup.add(sphereMesh);
+
+                const ringGeo1 = new THREE.TorusGeometry(3.8, 0.03, 16, 100);
+                const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true, transparent: true, opacity: 0.4 });
+                const ring1 = new THREE.Mesh(ringGeo1, ringMat1);
+                ring1.rotation.x = Math.PI / 2.5;
+                supportGroup.add(ring1);
+
+                const ringGeo2 = new THREE.TorusGeometry(5, 0.02, 16, 100);
+                const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x00243A, wireframe: true, transparent: true, opacity: 0.3 });
+                const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
+                ring2.rotation.y = Math.PI / 3;
+                supportGroup.add(ring2);
+
+                const signalParticlesGeo = new THREE.BufferGeometry();
+                const count = 40;
+                const posArray = new Float32Array(count * 3);
+
+                for(let i = 0; i < count * 3; i += 3) {
+                    posArray[i] = (Math.random() - 0.5) * 8;
+                    posArray[i+1] = (Math.random() - 0.5) * 8;
+                    posArray[i+2] = (Math.random() - 0.5) * 8;
+                }
+
+                signalParticlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+                const signalParticlesMat = new THREE.PointsMaterial({
+                    size: 0.08,
+                    color: 0x40B2E6,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                const signalParticlesMesh = new THREE.Points(signalParticlesGeo, signalParticlesMat);
+                supportGroup.add(signalParticlesMesh);
+
+                scene.add(supportGroup);
+
+                function adjustLayout() {
+                    const isMobile = window.innerWidth < 768;
+                    if (isMobile) {
+                        camera.position.set(0, 0, 10);
+                        supportGroup.position.set(0, 0, 0);
+                    } else {
+                        camera.position.set(2.8, 0, 8.5);
+                        supportGroup.position.set(2.8, 0, 0);
+                    }
+                    camera.lookAt(0, 0, 0);
+                }
+                adjustLayout();
+
+                let mouseX = 0;
+                let mouseY = 0;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth) - 0.5;
+                    mouseY = (e.clientY / window.innerHeight) - 0.5;
+                });
+
+                function animate() {
+                    requestAnimationFrame(animate);
+
+                    sphereMesh.rotation.y += 0.006;
+                    ring1.rotation.z += 0.003;
+                    ring2.rotation.z -= 0.004;
+                    signalParticlesMesh.rotation.y += 0.002;
+
+                    supportGroup.rotation.y += (mouseX * 0.4 - supportGroup.rotation.y) * 0.05;
+                    supportGroup.rotation.x += (-mouseY * 0.4 - supportGroup.rotation.x) * 0.05;
+
+                    renderer.render(scene, camera);
+                }
+                animate();
+
+                window.addEventListener('resize', () => {
+                    const w = getWidth();
+                    const h = getHeight();
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(w, h);
+                    adjustLayout();
+                });
+            }
+
+            // Mobile Menu Handler
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuIcon = document.getElementById('menuIcon');
+
+            if (menuBtn && mobileMenu && menuIcon) {
+                menuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    menuIcon.classList.toggle('fa-bars');
+                    menuIcon.classList.toggle('fa-xmark');
+                });
+            }
+
+            // AJAX Form Submission Handler connected to Node.js Backend
+            const contactForm = document.getElementById('contactForm');
+            const formStatus = document.getElementById('formStatus');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    // Button Loading State
+                    if(submitBtn) {
+                        submitBtn.disabled = true;
+                        if(btnText) btnText.innerText = "Submitting Inquiry...";
+                        if(btnIcon) btnIcon.className = "fa-solid fa-spinner animate-spin";
+                    }
+                    
+                    const formData = {
+                        name: contactForm.querySelector('[name="fullName"]').value,
+                        email: contactForm.querySelector('[name="corporateEmail"]').value,
+                        phone: contactForm.querySelector('[name="phone"]').value,
+                        company: contactForm.querySelector('[name="department"]').value,
+                        message: contactForm.querySelector('[name="message"]').value
+                    };
+
+                    try {
+                        const response = await fetch('/api/v1/contact', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                        });
+
+                        const result = await response.json();
+                        formStatus.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+
+                        if (result.success) {
+                            formStatus.classList.add('bg-green-100', 'text-green-700');
+                            formStatus.innerText = result.message || 'Inquiry submitted successfully! Our team will contact you shortly.';
+                            contactForm.reset();
+                        } else {
+                            formStatus.classList.add('bg-red-100', 'text-red-700');
+                            formStatus.innerText = result.message || 'Error submitting form.';
+                        }
+                    } catch (err) {
+                        formStatus.classList.remove('hidden');
+                        formStatus.classList.add('bg-red-100', 'text-red-700');
+                        formStatus.innerText = 'Unable to send request. Please check server connection.';
+                    } finally {
+                        // Reset Button State
+                        if(submitBtn) {
+                            submitBtn.disabled = false;
+                            if(btnText) btnText.innerText = "Submit Official Inquiry";
+                            if(btnIcon) btnIcon.className = "fa-solid fa-paper-plane";
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

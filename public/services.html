@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-x-hidden scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Transportation & Integrated Logistics | Veloqix Technologies</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- Three.js for Interactive 3D WebGL Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandMaersk: '#00243A',
+                        brandAccent: '#40B2E6',
+                        brandBg: '#F4F5F7',
+                        brandDark: '#0A121A',
+                        brandGold: '#D4AF37'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .maersk-card-3d {
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-style: preserve-3d;
+        }
+        .maersk-card-3d:hover {
+            box-shadow: 0 25px 50px -12px rgba(0, 36, 58, 0.25);
+            transform: translateY(-6px);
+        }
+        .portal-glow:hover {
+            box-shadow: 0 0 35px rgba(64, 178, 230, 0.45);
+        }
+    </style>
+</head>
+<body class="bg-brandBg text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-brandAccent selection:text-brandMaersk">
+
+    <!-- 1. GLOBAL ANNOUNCEMENT & SYSTEM TELEMETRY TICKER -->
+    <div class="bg-brandDark text-white text-[11px] sm:text-xs py-2 px-4 sm:px-6 flex justify-between items-center border-b border-gray-800/80 relative z-50">
+        <div class="flex items-center gap-2 sm:gap-3 overflow-hidden whitespace-nowrap">
+            <span class="bg-brandAccent text-brandMaersk font-extrabold px-2.5 py-0.5 rounded text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-brandMaersk animate-pulse"></span> Live Status
+            </span>
+            <span class="text-gray-300 truncate">Software Telemetry & Workforce Dispatch Network Active.</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0">
+            <span class="hover:text-brandAccent transition-colors cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-signal text-emerald-400"></i> Telemetry Active</span>
+            <span class="hover:text-brandAccent transition-colors cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-headset"></i> Tech Desk</span>
+        </div>
+    </div>
+
+    <!-- 2. MAIN NAVIGATION NAVBAR -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex justify-between items-center">
+            <a href="index.html" class="text-lg sm:text-2xl font-black text-brandMaersk flex items-center gap-1.5 sm:gap-2 tracking-tight group">
+                <i class="fa-solid fa-asterisk text-brandAccent text-xl sm:text-3xl group-hover:rotate-90 transition-transform duration-500"></i> 
+                <span>VELOQIX <span class="text-[9px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded">TECHNOLOGIES</span></span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-bold text-gray-700">
+                <a href="index.html" class="hover:text-brandAccent transition-colors">Home</a>
+                <a href="services.html" class="text-brandAccent border-b-2 border-brandAccent pb-1">Software & Dispatch</a>
+                <a href="products.html" class="hover:text-brandAccent transition-colors">Proprietary Software</a>
+                <a href="solutions.html" class="hover:text-brandAccent transition-colors">Enterprise Solutions</a>
+                <a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a>
+                <a href="contact.html" class="hover:text-brandAccent transition-colors">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <div class="flex items-center space-x-2 lg:hidden">
+                <button id="mobileMenuBtn" class="p-2 text-brandMaersk text-xl focus:outline-none hover:text-brandAccent transition-colors" aria-label="Toggle Navigation">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Drawer -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-200 px-5 py-4 space-y-3 font-bold text-sm text-gray-700 shadow-xl">
+            <a href="index.html" class="block py-1 hover:text-brandAccent transition-colors">Home</a>
+            <a href="services.html" class="block text-brandAccent bg-sky-50 px-3 py-2 rounded-lg">Software & Dispatch</a>
+            <a href="products.html" class="block py-1 hover:text-brandAccent transition-colors">Proprietary Software</a>
+            <a href="solutions.html" class="block py-1 hover:text-brandAccent transition-colors">Enterprise Solutions</a>
+            <a href="about.html" class="block py-1 hover:text-brandAccent transition-colors">About Veloqix</a>
+            <a href="contact.html" class="block py-1 hover:text-brandAccent transition-colors">Contact</a>
+        </div>
+    </nav>
+
+    <!-- 3. HERO SECTION -->
+    <section class="relative bg-gradient-to-br from-brandDark via-brandMaersk to-brandDark text-white py-16 sm:py-24 lg:py-28 px-4 sm:px-6 overflow-hidden min-h-[500px] flex items-center">
+        <div id="hero-globe-3d" class="absolute inset-0 z-0 opacity-50 cursor-grab active:cursor-grabbing"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10 w-full">
+            <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-white/10 rounded-full border border-white/20 mb-4 backdrop-blur shadow-inner">
+                    <i class="fa-solid fa-laptop-code text-brandAccent text-xs"></i>
+                    <span class="text-brandAccent font-bold text-[10px] sm:text-xs uppercase tracking-widest">Digital Logistics & Workforce Tech</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight">
+                    Smart Software & <span class="text-brandAccent">Workforce Dispatch</span>
+                </h1>
+                <p class="mt-4 sm:mt-5 text-gray-300 text-sm sm:text-base leading-relaxed">
+                    Veloqix provides real-time fleet software orchestration, API telemetry integrations, and verified warehouse workforce allocation via FN Logistic Hub.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-4">
+                    <a href="#quote-calculator" class="px-7 py-3.5 bg-brandAccent text-brandMaersk font-extrabold rounded-lg hover:bg-sky-300 hover:shadow-brandAccent/30 transition shadow-lg text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-users"></i> Request Workforce
+                    </a>
+                    <a href="/dashboard.html" class="px-7 py-3.5 bg-white/10 border border-white/30 text-white font-bold rounded-lg hover:bg-white hover:text-brandMaersk transition text-xs sm:text-sm uppercase tracking-wider backdrop-blur flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high text-brandAccent"></i> Launch Command Center
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. KEY METRICS STRIP -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 relative z-30">
+        <div class="bg-white/95 backdrop-blur rounded-xl p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center border border-gray-200/80 shadow-2xl">
+            <div class="p-2 border-r border-gray-100 last:border-0">
+                <div class="text-3xl sm:text-4xl font-black text-brandMaersk tracking-tight">100%</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Verified Personnel</div>
+            </div>
+            <div class="p-2 lg:border-r border-gray-100">
+                <div class="text-3xl sm:text-4xl font-black text-brandAccent tracking-tight">24/7</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">API Telemetry</div>
+            </div>
+            <div class="p-2 border-r border-gray-100 last:border-0">
+                <div class="text-3xl sm:text-4xl font-black text-brandMaersk tracking-tight">SaaS</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Cloud Architecture</div>
+            </div>
+            <div class="p-2">
+                <div class="text-3xl sm:text-4xl font-black text-brandAccent tracking-tight">99.8%</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Software Uptime</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. MAIN SERVICES GRID SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+            <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-2">Our Capabilities</span>
+            <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk tracking-tight">Software Solutions & Workforce Dispatch</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            
+            <!-- Service 1 (ACTIVE): Workforce Logistics & Dispatch -->
+            <div class="bg-white p-8 rounded-xl shadow-md border-2 border-brandAccent/60 hover:border-brandAccent maersk-card-3d flex flex-col justify-between cursor-pointer group" onclick="document.getElementById('service-select').value='FN Hub Warehouse Staffing'; document.getElementById('quote-calculator').scrollIntoView({behavior: 'smooth'});">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-sky-50 text-brandAccent flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-users-gear"></i>
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase flex items-center gap-1.5"><i class="fa-solid fa-circle text-[6px] text-emerald-500 animate-pulse"></i> Active Service</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-brandMaersk mb-3 group-hover:text-brandAccent transition-colors">Workforce Logistics</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">
+                        On-demand supply of trained warehouse staffing, supervisors, loaders, and operational teams dispatched instantly via <strong>FN Logistic Hub</strong>.
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-brandMaersk">
+                    <span>Powered by FN Hub</span>
+                    <span class="text-brandAccent flex items-center gap-1 group-hover:translate-x-1 transition-transform">Request Dispatch <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+
+            <!-- Service 2 (ACTIVE): Fleet Telemetry Intelligence -->
+            <div class="bg-white p-8 rounded-xl shadow-md border-2 border-brandAccent/60 hover:border-brandAccent maersk-card-3d flex flex-col justify-between cursor-pointer group" onclick="document.getElementById('service-select').value='Custom Telemetry/API Integration'; document.getElementById('quote-calculator').scrollIntoView({behavior: 'smooth'});">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-sky-50 text-brandAccent flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase flex items-center gap-1.5"><i class="fa-solid fa-circle text-[6px] text-emerald-500 animate-pulse"></i> Active Service</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-brandMaersk mb-3 group-hover:text-brandAccent transition-colors">Fleet Telemetry Intelligence</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">
+                        Real-time GPS tracking dashboard, driver behavior monitoring, and automated status alerts via unified enterprise web portals.
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-brandMaersk">
+                    <span>SaaS Platform</span>
+                    <span class="text-brandAccent flex items-center gap-1 group-hover:translate-x-1 transition-transform">Request Demo <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+
+            <!-- Service 3 (ACTIVE): Telemetry APIs & Integrations -->
+            <div class="bg-white p-8 rounded-xl shadow-md border-2 border-brandAccent/60 hover:border-brandAccent maersk-card-3d flex flex-col justify-between cursor-pointer group" onclick="document.getElementById('service-select').value='Custom Telemetry/API Integration'; document.getElementById('quote-calculator').scrollIntoView({behavior: 'smooth'});">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-sky-50 text-brandAccent flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase flex items-center gap-1.5"><i class="fa-solid fa-circle text-[6px] text-emerald-500 animate-pulse"></i> Active Service</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-brandMaersk mb-3 group-hover:text-brandAccent transition-colors">Telemetry APIs</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">
+                        Custom software webhooks and API hooks into ERP systems (SAP/Oracle) for live dispatch monitoring and automated workflow tracking.
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-brandMaersk">
+                    <span>API Integration</span>
+                    <span class="text-brandAccent flex items-center gap-1 group-hover:translate-x-1 transition-transform">Get API Access <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+
+            <!-- Service 4 (LOCKED): Physical Inland Transport -->
+            <div class="bg-gray-50/80 p-8 rounded-xl border border-gray-300 flex flex-col justify-between opacity-75 relative overflow-hidden">
+                <div class="absolute top-3 right-3 bg-gray-200 text-gray-700 text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
+                    <i class="fa-solid fa-lock text-gray-500"></i> Fleet Partner Required
+                </div>
+                <div>
+                    <div class="w-12 h-12 rounded-lg bg-gray-200 text-gray-500 flex items-center justify-center text-xl mb-6">
+                        <i class="fa-solid fa-truck-moving"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-3">Inland Transport Haulage</h3>
+                    <p class="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6">
+                        Full fleet container movement. (Currently available exclusively via verified 3PL logistics fleet partners).
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-gray-200 flex items-center justify-between text-xs font-bold text-gray-500">
+                    <span>Partner Infrastructure</span>
+                    <span class="text-gray-400">Enterprise Quote</span>
+                </div>
+            </div>
+
+            <!-- Service 5 (LOCKED): Yard & Gate Hardware Automation -->
+            <div class="bg-gray-50/80 p-8 rounded-xl border border-gray-300 flex flex-col justify-between opacity-75 relative overflow-hidden">
+                <div class="absolute top-3 right-3 bg-gray-200 text-gray-700 text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
+                    <i class="fa-solid fa-lock text-gray-500"></i> On-Site Hardware
+                </div>
+                <div>
+                    <div class="w-12 h-12 rounded-lg bg-gray-200 text-gray-500 flex items-center justify-center text-xl mb-6">
+                        <i class="fa-solid fa-warehouse"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-3">Yard Hardware Automation</h3>
+                    <p class="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6">
+                        Physical gate barrier hardware, ANPR camera installations, and loading dock automated boom setup.
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-gray-200 flex items-center justify-between text-xs font-bold text-gray-500">
+                    <span>Hardware Integration</span>
+                    <span class="text-gray-400">Custom Deployment</span>
+                </div>
+            </div>
+
+            <!-- Service 6 (LOCKED): Intermodal Freight Connect -->
+            <div class="bg-gray-50/80 p-8 rounded-xl border border-gray-300 flex flex-col justify-between opacity-75 relative overflow-hidden">
+                <div class="absolute top-3 right-3 bg-gray-200 text-gray-700 text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
+                    <i class="fa-solid fa-lock text-gray-500"></i> Multi-Modal Partner
+                </div>
+                <div>
+                    <div class="w-12 h-12 rounded-lg bg-gray-200 text-gray-500 flex items-center justify-center text-xl mb-6">
+                        <i class="fa-solid fa-plane-departure"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-3">Intermodal Freight Connect</h3>
+                    <p class="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6">
+                        Port-to-rail container switching documentation and multi-carrier booking aggregation.
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-gray-200 flex items-center justify-between text-xs font-bold text-gray-500">
+                    <span>Multi-Carrier Tech</span>
+                    <span class="text-gray-400">Enterprise Only</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 6. HIGH-CONVERSION INSTANT FORM -->
+    <section id="quote-calculator" class="py-16 sm:py-24 bg-white border-y border-gray-200 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5">
+                    <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-2">Service Request Desk</span>
+                    <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk tracking-tight mb-4">Request Workforce & Telemetry Solutions</h2>
+                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-8">
+                        Need warehouse workforce allocation or custom API integrations? Submit your requirements for instant evaluation.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-xs font-bold text-brandMaersk">
+                            <i class="fa-solid fa-circle-check text-brandAccent text-base"></i> Direct FN Hub Workforce Allocation
+                        </div>
+                        <div class="flex items-center gap-3 text-xs font-bold text-brandMaersk">
+                            <i class="fa-solid fa-circle-check text-brandAccent text-base"></i> Cloud Telemetry & Software APIs
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-brandBg p-8 sm:p-10 rounded-2xl border border-gray-200/80 shadow-xl">
+                    <form action="https://formspree.io/f/mvzeevwv" method="POST" class="space-y-5">
+
+                        <input type="hidden" name="_next" value="https://veloqix.com/thanks.html">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Company Name</label>
+                                <input type="text" name="Company Name" placeholder="e.g. Apex Logistics" required class="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 text-xs focus:ring-2 focus:ring-brandAccent focus:border-brandAccent focus:outline-none transition-all font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Contact Email / Phone</label>
+                                <input type="text" name="Contact Details" placeholder="e.g. contact@apex.com" required class="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 text-xs focus:ring-2 focus:ring-brandAccent focus:border-brandAccent focus:outline-none transition-all font-medium">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Service Required</label>
+                                <select id="service-select" name="Service Required" class="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 text-xs focus:ring-2 focus:ring-brandAccent focus:border-brandAccent focus:outline-none transition-all font-medium">
+                                    <option value="FN Hub Warehouse Staffing">FN Hub Warehouse Staffing</option>
+                                    <option value="Custom Telemetry/API Integration">Custom Telemetry/API Integration</option>
+                                    <option value="Fleet Command Dashboard Access">Fleet Command Dashboard Access</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Hub / Facility Location</label>
+                                <input type="text" name="Facility Location" placeholder="e.g. Gurugram / Farukhnagar" required class="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 text-xs focus:ring-2 focus:ring-brandAccent focus:border-brandAccent focus:outline-none transition-all font-medium">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Staff Count / API Requirements</label>
+                            <input type="text" name="Staff Count / API Requirements" placeholder="e.g. 15 Warehouse Loaders / Shift" class="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 text-xs focus:ring-2 focus:ring-brandAccent focus:border-brandAccent focus:outline-none transition-all font-medium">
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-brandMaersk text-white font-extrabold rounded-lg hover:bg-brandDark transition-all text-xs uppercase tracking-wider shadow-lg hover:shadow-brandMaersk/30 active:scale-[0.99] flex items-center justify-center gap-2">
+                            <span>Submit Request</span> <i class="fa-solid fa-paper-plane text-brandAccent"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. CORPORATE FOOTER -->
+    <footer class="bg-brandMaersk text-white py-12 sm:py-16 border-t border-gray-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <div>
+                <div class="text-lg sm:text-xl font-black tracking-tight mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-asterisk text-brandAccent text-2xl"></i> VELOQIX
+                </div>
+                <p class="text-gray-400 leading-relaxed">Logistics Software Solutions & Industrial Workforce Recruitment Platform.</p>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Operations & Portals</h5>
+                <ul class="space-y-2.5 text-gray-400">
+                    <li><a href="/dashboard.html" class="hover:text-brandAccent text-brandAccent font-bold transition-colors"><i class="fa-solid fa-gauge mr-1"></i> Fleet Command Center</a></li>
+                    <li><a href="/driver.html" class="hover:text-brandAccent transition-colors"><i class="fa-solid fa-truck-fast mr-1"></i> Driver Telemetry Terminal</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Platforms</h5>
+                <ul class="space-y-2.5 text-gray-400">
+                    <li><a href="https://fn-logistic-hub.onrender.com/" target="_blank" rel="noopener noreferrer" class="hover:text-brandAccent transition-colors">FN Logistic Hub Portal</a></li>
+                    <li><a href="https://pgease.pythonanywhere.com" target="_blank" rel="noopener noreferrer" class="hover:text-brandAccent transition-colors">MyPGEase PropTech</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Headquarters</h5>
+                <p class="text-gray-400 leading-relaxed mb-3">Veloqix Tech Hub, Gurugram, Haryana, India.</p>
+                <p class="text-gray-400"><i class="fa-solid fa-envelope mr-1 text-brandAccent"></i> contact@veloqix.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16 pt-8 border-t border-gray-800 text-center text-gray-500">
+            © 2026 Veloqix Technologies. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // 1. Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIcon = document.getElementById('menuIcon');
+
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                menuIcon.classList.toggle('fa-bars');
+                menuIcon.classList.toggle('fa-xmark');
+            });
+        }
+
+        // 2. Service Form Submission Handler (Hybrid Integration: Backend API + Formspree Fallback)
+        const serviceForm = document.querySelector('#quote-calculator form');
+        if(serviceForm) {
+            serviceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = serviceForm.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                
+                submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(serviceForm);
+                const payload = {
+                    name: formData.get('Company Name'),
+                    email: formData.get('Contact Details'),
+                    company: formData.get('Company Name'),
+                    message: `Service: ${formData.get('Service Required')} | Location: ${formData.get('Facility Location')} | Requirements: ${formData.get('Staff Count / API Requirements')}`
+                };
+
+                try {
+                    const res = await fetch('/api/v1/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (res.ok) {
+                        const result = await res.json();
+                        if (result.success) {
+                            alert('Service Request Submitted Successfully!');
+                            serviceForm.reset();
+                            submitBtn.innerHTML = originalBtnText;
+                            submitBtn.disabled = false;
+                            return;
+                        }
+                    }
+                    // If backend response is not successful, submit via Formspree directly
+                    serviceForm.submit();
+                } catch (err) {
+                    // Fallback to native form action if fetch fails
+                    serviceForm.submit();
+                }
+            });
+        }
+
+        // 3. Responsive Three.js 3D Background Matrix
+        (function initHero3DTelemetryMatrix() {
+            const container = document.getElementById('hero-globe-3d');
+            if(!container) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            const knotGeo = new THREE.TorusKnotGeometry(2.3, 0.6, 120, 16);
+            const knotMat = new THREE.MeshBasicMaterial({ 
+                color: 0x40B2E6, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.45 
+            });
+            const knot = new THREE.Mesh(knotGeo, knotMat);
+            scene.add(knot);
+
+            camera.position.z = 6.5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                knot.rotation.x += 0.005;
+                knot.rotation.y += 0.008;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Window Resize Handler
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        })();
+    </script>
+</body>
+</html>

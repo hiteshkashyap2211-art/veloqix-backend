@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Security Portal | Veloqix Technologies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-sky-500 selection:text-white relative overflow-x-hidden">
+
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-sky-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <header class="w-full border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl px-6 py-4 flex justify-between items-center z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-tr from-sky-500/20 to-blue-600/20 border border-sky-500/30 rounded-xl flex items-center justify-center text-sky-400 font-bold shadow-inner">
+                <i class="fa-solid fa-shield-halved text-lg"></i>
+            </div>
+            <div>
+                <span class="font-black text-lg tracking-wider text-white">VELOQIX</span>
+                <span class="text-[10px] block text-sky-400 font-semibold uppercase tracking-widest -mt-1">Enterprise Security</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-300 bg-slate-900/80 px-3.5 py-1.5 rounded-full border border-slate-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="font-medium">2FA Gateway Operational</span>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-6 z-10">
+        <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-2xl overflow-hidden">
+            
+            <div class="p-8 lg:p-12 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-b md:border-b-0 md:border-r border-slate-800/80 flex flex-col justify-between relative">
+                <div>
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-6">
+                        <i class="fa-solid fa-lock text-[10px]"></i> Authorized Access Only
+                    </span>
+                    <h1 class="text-2xl lg:text-3xl font-black text-white leading-tight tracking-tight">
+                        Administrative Console Verification
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+                        Single-sign-on (SSO) & Bi-Factor One-Time Password verification required to access enterprise fleet intelligence telemetry.
+                    </p>
+                </div>
+
+                <div class="space-y-4 my-8">
+                    <div class="flex items-center gap-3 text-xs text-slate-300 bg-slate-950/40 p-3 rounded-xl border border-slate-800/50">
+                        <i class="fa-solid fa-key text-sky-400 text-sm"></i>
+                        <span>Time-based Dynamic OTP Passcode Validation</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-slate-300 bg-slate-950/40 p-3 rounded-xl border border-slate-800/50">
+                        <i class="fa-solid fa-user-shield text-sky-400 text-sm"></i>
+                        <span>Role-Based Access Control (RBAC) Enforced</span>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-500 border-t border-slate-800/80 pt-4 flex justify-between items-center">
+                    <span>System ID: <strong class="text-slate-400 font-mono">VLQ-SEC-2026</strong></span>
+                    <span class="text-slate-400">v4.2.0</span>
+                </div>
+            </div>
+
+            <div class="p-8 lg:p-12 flex flex-col justify-center bg-slate-900/60">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white">Sign In Gateway</h2>
+                    <p class="text-xs text-slate-400 mt-1">Enter your registered admin credentials to proceed.</p>
+                </div>
+
+                <form id="b2bLoginForm" class="space-y-5" onsubmit="return false;">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
+                            Admin Identity Email
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-sm">
+                                <i class="fa-solid fa-envelope"></i>
+                            </span>
+                            <input type="email" id="adminEmail" placeholder="admin@domain.com" required 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 text-white rounded-xl text-sm focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none transition placeholder-slate-600 font-mono">
+                        </div>
+                    </div>
+
+                    <div id="otpField" class="hidden">
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
+                            6-Digit OTP Passcode
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-sm">
+                                <i class="fa-solid fa-key"></i>
+                            </span>
+                            <input type="text" id="adminOtp" placeholder="••••••" maxlength="6"
+                                class="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 text-white rounded-xl text-sm focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none transition placeholder-slate-600 font-mono tracking-widest text-center">
+                        </div>
+                    </div>
+
+                    <div id="btnGroup" class="space-y-3 pt-2">
+                        <button type="button" id="getOtpBtn" 
+                            class="w-full py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 active:scale-[0.99] text-white font-bold rounded-xl transition-all shadow-lg shadow-sky-500/20 text-sm flex items-center justify-center gap-2">
+                            <span>Get Admin OTP</span> 
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                        <button type="button" id="loginBtn" 
+                            class="hidden w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-[0.99] text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 text-sm flex items-center justify-center gap-2">
+                            <span>Verify and Login</span> 
+                            <i class="fa-solid fa-lock-open text-xs"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full border-t border-slate-800/80 bg-slate-900/40 px-6 py-3.5 text-center text-xs text-slate-500 z-10">
+        © 2026 Veloqix Technologies Inc. Enterprise Portal.
+    </footer>
+
+    <script>
+        const getOtpBtn = document.getElementById('getOtpBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const otpField = document.getElementById('otpField');
+        const adminEmail = document.getElementById('adminEmail');
+        const adminOtp = document.getElementById('adminOtp');
+
+        getOtpBtn.addEventListener('click', async () => {
+            const email = adminEmail.value.trim();
+            if (!email) {
+                alert('Please enter your authorized admin email address.');
+                return;
+            }
+
+            getOtpBtn.disabled = true;
+            getOtpBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Sending OTP...</span>`;
+
+            try {
+                const res = await fetch('/api/v1/admin/generate-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Success: ' + data.message);
+                    getOtpBtn.classList.add('hidden');
+                    otpField.classList.remove('hidden');
+                    loginBtn.classList.remove('hidden');
+                    adminOtp.focus();
+                } else {
+                    alert('Error: ' + data.message);
+                    getOtpBtn.disabled = false;
+                    getOtpBtn.innerHTML = `<span>Get Admin OTP</span> <i class="fa-solid fa-paper-plane text-xs"></i>`;
+                }
+            } catch (err) {
+                alert('Server Error: Could not connect to API.');
+                getOtpBtn.disabled = false;
+                getOtpBtn.innerHTML = `<span>Get Admin OTP</span> <i class="fa-solid fa-paper-plane text-xs"></i>`;
+            }
+        });
+
+        loginBtn.addEventListener('click', async () => {
+            const email = adminEmail.value.trim();
+            const otp = adminOtp.value.trim();
+
+            if (!otp || otp.length < 6) {
+                alert('Please enter valid 6-digit OTP code.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/admin/login-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // FIX: Save both keys so admin.html accepts login
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('adminSecret', 'veloqix_secure_admin_123'); 
+
+                    alert('Authentication Successful! Redirecting to dashboard...');
+                    window.location.href = '/admin.html';
+                } else {
+                    alert('Login Failed: ' + data.message);
+                }
+            } catch (err) {
+                alert('Server connection error during OTP verification.');
+            }
+        });
+    </script>
+</body>
+</html>

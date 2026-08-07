@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veloqix - Enterprise Fleet Command Center</title>
+  
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet OpenStreetMap CSS/JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Socket.IO Client Library -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Chart.js for Live Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #070c1e; color: #f1f5f9; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    #map { height: 100%; min-height: 520px; border-radius: 16px; z-index: 1; }
+    .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card:hover { border-color: rgba(59, 130, 246, 0.3); }
+    .leaflet-control-layers { background: rgba(15, 23, 42, 0.95) !important; color: #fff !important; border-radius: 12px !important; border: 1px solid #334155 !important; }
+    .leaflet-control-layers-base label { color: #cbd5e1 !important; font-size: 12px; font-weight: 500; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b1329; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- 🏢 Enterprise Top Navbar -->
+  <header class="bg-slate-900/90 border-b border-slate-800 px-6 py-3.5 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
+    <div class="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-4">
+        <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-lg shadow-blue-500/20 text-white font-bold text-lg">⚡</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">VELOQIX</h1>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">ENTERPRISE OS</span>
+          </div>
+          <p class="text-xs text-slate-400">Autonomous Logistics Gateway & Fleet Telemetry System</p>
+        </div>
+      </div>
+
+      <!-- Quick KPI Counters -->
+      <div class="hidden lg:flex items-center gap-6 bg-slate-950/60 px-5 py-2 rounded-xl border border-slate-800/80">
+        <div class="text-center border-r border-slate-800 pr-5">
+          <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Active Fleet</span>
+          <span class="text-sm font-bold text-emerald-400 mono">1 Units</span>
+        </div>
+        <div class="text-center border-r border-slate-800 pr-5">
+          <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Gateway Latency</span>
+          <span class="text-sm font-bold text-blue-400 mono">&lt; 12ms</span>
+        </div>
+        <div class="text-center">
+          <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Geofence Compliance</span>
+          <span id="kpiGeofence" class="text-sm font-bold text-emerald-400 mono">100%</span>
+        </div>
+      </div>
+
+      <!-- Network Badges -->
+      <div class="flex items-center gap-3">
+        <span id="socketStatusBadge" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping mr-2"></span> Connecting...
+        </span>
+        <span id="authStatusBadge" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-medium">Session Inactive</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 🎛️ Command Center Viewport -->
+  <main class="max-w-[1800px] mx-auto p-4 md:p-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+
+    <!-- Left Column: Controls & Ingestion (4 Cols) -->
+    <div class="lg:col-span-4 space-y-5 flex flex-col">
+      
+      <!-- 1. Authentication Card -->
+      <div class="glass-card p-5 rounded-2xl shadow-xl">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xs font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">🔐 Auth & Session</h2>
+          <span class="text-[10px] text-slate-500">JWT Gateway</span>
+        </div>
+        <div class="space-y-2.5">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="email" id="loginEmail" placeholder="admin@veloqix.com" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 transition">
+            <input type="password" id="loginPassword" placeholder="••••••••" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 transition">
+          </div>
+          <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-blue-600/20">Authenticate Portal</button>
+        </div>
+      </div>
+
+      <!-- 2. Unit Registration Card -->
+      <div class="glass-card p-5 rounded-2xl shadow-xl">
+        <h2 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">🚚 Unit Provisioning</h2>
+        <div class="space-y-2.5">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="vehNumber" placeholder="HR-26-AB-1234" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+            <input type="text" id="devId" placeholder="IOT-SER-9082" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+          <select id="vehType" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-300">
+            <option value="INTERMODAL_CONTAINER">Intermodal Container</option>
+            <option value="COLD_STORAGE">Cold Storage Truck</option>
+            <option value="HAULAGE_TRAILER">Haulage Trailer</option>
+          </select>
+          <button onclick="addVehicle()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">Register Fleet Unit</button>
+        </div>
+      </div>
+
+      <!-- 3. Real-Time Telemetry Control Panel -->
+      <div class="glass-card p-5 rounded-2xl shadow-xl flex-1 flex flex-col justify-between">
+        <div>
+          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">📡 Live Telemetry Stream</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block">Active Vehicle ID / UUID</label>
+              <input type="text" id="teleVehId" value="1" placeholder="Vehicle ID" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs mono focus:outline-none focus:border-emerald-500">
+            </div>
+            
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block">Coordinates & Speed</label>
+              <div class="grid grid-cols-3 gap-2">
+                <input type="number" step="any" id="lat" value="28.4595" placeholder="Lat" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono">
+                <input type="number" step="any" id="lng" value="77.0266" placeholder="Lng" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono">
+                <input type="number" id="speed" value="65" placeholder="km/h" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono">
+              </div>
+            </div>
+
+            <!-- Geofence Monitor Card -->
+            <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <span class="block text-[10px] text-slate-400 font-semibold uppercase">Geofence Compliance</span>
+                <span class="text-[11px] text-slate-500">Gurugram Yard Zone (3KM Radius)</span>
+              </div>
+              <span id="geofenceStatus" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">INSIDE ZONE 🟢</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2 mt-4">
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="sendTelemetry()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-emerald-600/20">Send Pulse</button>
+            <button id="simBtn" onclick="toggleSimulator()" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-amber-600/20">Start Simulation</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="clearRouteHistory()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition border border-slate-700">🧹 Clear Route</button>
+            <button onclick="downloadCSVReport()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-sky-600/20">📥 Export CSV</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Map & Diagnostics (8 Cols) -->
+    <div class="lg:col-span-8 space-y-5 flex flex-col">
+      
+      <!-- Interactive Real-Time Map View -->
+      <div class="glass-card p-4 rounded-2xl shadow-xl flex-1 flex flex-col min-h-[480px]">
+        <div class="flex justify-between items-center mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
+            <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Live Fleet Telemetry Map</h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400 mono bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800" id="coordsDisplay">28.4595, 77.0266</span>
+          </div>
+        </div>
+        <div id="map" class="w-full flex-1"></div>
+      </div>
+
+      <!-- Live Diagnostics Graph & Event Log Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+        
+        <!-- Live Graph (7 cols) -->
+        <div class="md:col-span-7 glass-card p-4 rounded-2xl shadow-xl">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">📈 Speed & Temperature Telemetry</h2>
+          <div class="h-36">
+            <canvas id="telemetryChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Activity Audit Stream (5 cols) -->
+        <div class="md:col-span-5 glass-card p-4 rounded-2xl shadow-xl flex flex-col">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">⚡ Audit Stream</h2>
+            <span class="text-[10px] text-slate-500">Real-Time WebSocket</span>
+          </div>
+          <pre id="outputLog" class="bg-slate-950/90 p-3 rounded-xl text-[11px] text-sky-400 mono overflow-y-auto flex-1 h-36 border border-slate-800/80 whitespace-pre-wrap leading-relaxed">System online. Awaiting telemetry pulses...</pre>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    let jwtToken = localStorage.getItem('token') || '';
+    let tenantId = localStorage.getItem('tenantId') || '';
+    let simInterval = null;
+    let isInsideGeofence = true;
+    let routeCoordinates = []; 
+    let telemetryHistoryLog = [];
+
+    // ⚡ 1. Initialize Socket.IO Client
+    const socket = io();
+
+    socket.on('connect', () => {
+      console.log('⚡ Connected to Gateway:', socket.id);
+      const badge = document.getElementById('socketStatusBadge');
+      badge.className = "inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+      badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-2"></span> WebSocket Online`;
+
+      if(tenantId) {
+        subscribeToTenantSocket(tenantId);
+      }
+    });
+
+    // ⚡ FIXED: Universal Telemetry Listeners for Both Global & Tenant Streams
+    socket.on('telemetry', (data) => {
+      updateUIWithTelemetry(data);
+    });
+
+    socket.on('telemetry_update', (data) => {
+      updateUIWithTelemetry(data);
+    });
+
+    socket.on('disconnect', () => {
+      const badge = document.getElementById('socketStatusBadge');
+      badge.className = "inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20";
+      badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-400 mr-2"></span> Socket Offline`;
+    });
+
+    // 🗺️ 2. Initialize Real-View Map
+    const map = L.map('map', { zoomControl: true }).setView([28.4595, 77.0266], 15);
+
+    const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '© Google Real-View'
+    }).addTo(map);
+
+    const cartoDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      attribution: '© CartoDB Dark'
+    });
+
+    L.control.layers({
+      "🛰️ Google Hybrid Real-View": googleHybrid,
+      "🌃 Command Dark": cartoDark
+    }).addTo(map);
+
+    // Geofence Setup
+    const geofenceCenter = [28.4595, 77.0266];
+    const geofenceRadiusMeters = 3000;
+
+    const geofenceCircle = L.circle(geofenceCenter, {
+      color: '#10b981',
+      fillColor: '#10b981',
+      fillOpacity: 0.12,
+      radius: geofenceRadiusMeters,
+      dashArray: '6, 12'
+    }).addTo(map).bindPopup("<b>Gurugram Yard Geofence Zone</b>");
+
+    // Route Breadcrumbs
+    const routePolyline = L.polyline([], {
+      color: '#38bdf8',
+      weight: 4,
+      opacity: 0.9,
+      smoothFactor: 1
+    }).addTo(map);
+
+    // Truck Icon
+    const truckIcon = L.divIcon({
+      className: 'custom-truck-marker',
+      html: `<div style="background: #2563eb; color: white; padding: 6px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 12px rgba(59,130,246,0.9); display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; font-size: 18px;">🚚</div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
+    });
+
+    const vehicleMarker = L.marker([28.4595, 77.0266], { icon: truckIcon }).addTo(map)
+      .bindPopup('<b>Veloqix Active Unit</b><br>Speed: 65 km/h').openPopup();
+
+    routeCoordinates.push([28.4595, 77.0266]);
+    routePolyline.setLatLngs(routeCoordinates);
+
+    // 📈 Initialize Chart
+    const ctx = document.getElementById('telemetryChart').getContext('2d');
+    const telemetryChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Speed (km/h)', data: [], borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', tension: 0.4, fill: true, borderWidth: 2 },
+          { label: 'Temp (°C)', data: [], borderColor: '#f59e0b', tension: 0.4, borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+          y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } }
+        }
+      }
+    });
+
+    if(jwtToken) {
+      document.getElementById('authStatusBadge').innerText = "Session Active";
+      document.getElementById('authStatusBadge').className = "text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium";
+    }
+
+    function logResponse(data) {
+      document.getElementById('outputLog').innerText = JSON.stringify(data, null, 2);
+    }
+
+    function checkGeofence(lat, lng) {
+      const currentLoc = L.latLng(lat, lng);
+      const zoneCenter = L.latLng(geofenceCenter[0], geofenceCenter[1]);
+      const distanceMeters = currentLoc.distanceTo(zoneCenter);
+
+      const statusBadge = document.getElementById('geofenceStatus');
+      const kpiBadge = document.getElementById('kpiGeofence');
+      const logBox = document.getElementById('outputLog');
+
+      if (distanceMeters > geofenceRadiusMeters) {
+        if (isInsideGeofence) {
+          isInsideGeofence = false;
+          statusBadge.className = "px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-pulse";
+          statusBadge.innerText = "OUTSIDE ZONE 🚨";
+          kpiBadge.innerText = "VIOLATION ⚠️";
+          kpiBadge.className = "text-sm font-bold text-rose-400 mono";
+          
+          geofenceCircle.setStyle({ color: '#f43f5e', fillColor: '#f43f5e' });
+          logBox.innerText = `🚨 [GEOFENCE_EXIT_ALERT] Left Yard Zone! Dist: ${Math.round(distanceMeters)}m\n` + logBox.innerText;
+        }
+      } else {
+        if (!isInsideGeofence) {
+          isInsideGeofence = true;
+          statusBadge.className = "px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+          statusBadge.innerText = "INSIDE ZONE 🟢";
+          kpiBadge.innerText = "100%";
+          kpiBadge.className = "text-sm font-bold text-emerald-400 mono";
+          
+          geofenceCircle.setStyle({ color: '#10b981', fillColor: '#10b981' });
+          logBox.innerText = `🟢 [GEOFENCE_ENTRY] Re-entered Yard Zone!\n` + logBox.innerText;
+        }
+      }
+    }
+
+    function updateUIWithTelemetry(data) {
+      const latitude = parseFloat(data.latitude);
+      const longitude = parseFloat(data.longitude);
+      const speed = parseFloat(data.speed_kmh);
+      const temp = parseFloat(data.temperature_celsius || 22.0);
+      const timestamp = new Date(data.timestamp || data.created_at || Date.now()).toLocaleString();
+
+      // Auto-update input boxes so manual fields sync with live mobile telemetry
+      document.getElementById('lat').value = latitude;
+      document.getElementById('lng').value = longitude;
+      document.getElementById('speed').value = speed;
+
+      telemetryHistoryLog.push({
+        timestamp,
+        vehicle_id: data.vehicle_id || 1,
+        latitude,
+        longitude,
+        speed_kmh: speed,
+        temperature_celsius: temp,
+        geofence_status: isInsideGeofence ? 'INSIDE' : 'OUTSIDE'
+      });
+
+      routeCoordinates.push([latitude, longitude]);
+      routePolyline.setLatLngs(routeCoordinates);
+
+      checkGeofence(latitude, longitude);
+
+      vehicleMarker.setLatLng([latitude, longitude]);
+      vehicleMarker.getPopup().setContent(`<b>Unit ID: ${data.vehicle_id || 1}</b><br>Speed: ${speed} km/h<br>Temp: ${temp}°C`);
+      
+      // Responsive Map Pan & Center Update
+      map.setView([latitude, longitude], map.getZoom(), { animate: true });
+      document.getElementById('coordsDisplay').innerText = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+      const timeStr = new Date(data.timestamp || data.created_at || Date.now()).toLocaleTimeString();
+      if (telemetryChart.data.labels.length > 8) {
+        telemetryChart.data.labels.shift();
+        telemetryChart.data.datasets[0].data.shift();
+        telemetryChart.data.datasets[1].data.shift();
+      }
+      telemetryChart.data.labels.push(timeStr);
+      telemetryChart.data.datasets[0].data.push(speed);
+      telemetryChart.data.datasets[1].data.push(temp);
+      telemetryChart.update();
+
+      // Log activity stream
+      const logBox = document.getElementById('outputLog');
+      logBox.innerText = `📡 Live Packet: [Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}, Spd: ${speed}km/h]\n` + logBox.innerText;
+    }
+
+    function downloadCSVReport() {
+      if (telemetryHistoryLog.length === 0) {
+        alert('No telemetry logs captured! Run simulation first.');
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,Timestamp,Vehicle_ID,Latitude,Longitude,Speed_KMH,Temp_C,Geofence_Zone\n";
+
+      telemetryHistoryLog.forEach(row => {
+        csvContent += `"${row.timestamp}",${row.vehicle_id},${row.latitude},${row.longitude},${row.speed_kmh},${row.temperature_celsius},${row.geofence_status}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Veloqix_Telemetry_Report_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function clearRouteHistory() {
+      routeCoordinates = [];
+      telemetryHistoryLog = [];
+      routePolyline.setLatLngs([]);
+      document.getElementById('outputLog').innerText = "🧹 Route & Logs Reset!\n" + document.getElementById('outputLog').innerText;
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if(data.token) {
+        jwtToken = data.token;
+        tenantId = data.user ? data.user.tenant_id : '';
+        localStorage.setItem('token', jwtToken);
+        if(tenantId) {
+          localStorage.setItem('tenantId', tenantId);
+          subscribeToTenantSocket(tenantId);
+        }
+        document.getElementById('authStatusBadge').innerText = "Session Active";
+        document.getElementById('authStatusBadge').className = "text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium";
+      }
+      logResponse(data);
+    }
+
+    async function addVehicle() {
+      const vehicle_number = document.getElementById('vehNumber').value;
+      const telemetry_device_id = document.getElementById('devId').value;
+      const type = document.getElementById('vehType').value;
+
+      const res = await fetch('/api/vehicles/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify({ vehicle_number, telemetry_device_id, type })
+      });
+      const data = await res.json();
+      if(data.vehicle && data.vehicle.id) {
+        document.getElementById('teleVehId').value = data.vehicle.id;
+      }
+      logResponse(data);
+    }
+
+    async function sendTelemetry() {
+      const vehicle_id = document.getElementById('teleVehId').value;
+      const latitude = parseFloat(document.getElementById('lat').value);
+      const longitude = parseFloat(document.getElementById('lng').value);
+      const speed_kmh = parseFloat(document.getElementById('speed').value);
+      const temp = (Math.random() * 5 + 20).toFixed(1);
+
+      updateUIWithTelemetry({ latitude, longitude, speed_kmh, temperature_celsius: temp });
+
+      const res = await fetch('/api/vehicles/telemetry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify({ vehicle_id, latitude, longitude, speed_kmh, temperature_celsius: temp })
+      });
+      const data = await res.json();
+      logResponse(data);
+    }
+
+    function toggleSimulator() {
+      const btn = document.getElementById('simBtn');
+      if(simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+        btn.innerText = "Start Simulation";
+        btn.className = "bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-amber-600/20";
+      } else {
+        btn.innerText = "Stop Simulation 🛑";
+        btn.className = "bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-rose-600/20 animate-pulse";
+        simInterval = setInterval(() => {
+          let currentLat = parseFloat(document.getElementById('lat').value);
+          let currentLng = parseFloat(document.getElementById('lng').value);
+          
+          document.getElementById('lat').value = (currentLat + 0.0015).toFixed(4);
+          document.getElementById('lng').value = (currentLng + 0.0012).toFixed(4);
+          document.getElementById('speed').value = Math.floor(Math.random() * 30 + 50);
+
+          sendTelemetry();
+        }, 3000);
+      }
+    }
+
+    function subscribeToTenantSocket(tId) {
+      socket.on(`telemetry_update_${tId}`, (data) => {
+        updateUIWithTelemetry(data);
+      });
+
+      socket.on(`alert_${tId}`, (alert) => {
+        const logBox = document.getElementById('outputLog');
+        logBox.innerText = `🚨 [${alert.type}] ${alert.message}\n` + logBox.innerText;
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-x-hidden scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Proprietary Software Ecosystem | Veloqix Technologies</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for Interactive 3D WebGL Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandMaersk: '#00243A',
+                        brandAccent: '#40B2E6',
+                        brandBg: '#F4F5F7',
+                        brandDark: '#0A121A',
+                        brandGold: '#D4AF37'
+                    },
+                    boxShadow: {
+                        '3d-hover': '0 20px 40px -15px rgba(0, 36, 58, 0.25)',
+                        'glow': '0 0 20px rgba(64, 178, 230, 0.35)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .maersk-card-3d {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .maersk-card-3d:hover {
+            box-shadow: 0 30px 60px -15px rgba(0, 36, 58, 0.25);
+        }
+        .card-inner-3d { transform: translateZ(30px); }
+        .tab-btn.active {
+            background-color: #00243A;
+            color: #ffffff;
+            border-color: #40B2E6;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-brandBg text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-brandAccent selection:text-brandMaersk flex flex-col min-h-screen">
+
+    <!-- 1. GLOBAL ANNOUNCEMENT & SYSTEM TELEMETRY TICKER -->
+    <div class="bg-brandDark text-white text-[11px] sm:text-xs py-2 px-4 sm:px-6 flex justify-between items-center border-b border-gray-800 relative z-50">
+        <div class="flex items-center gap-2 sm:gap-3 overflow-hidden whitespace-nowrap">
+            <span class="bg-brandAccent text-brandMaersk font-extrabold px-2 py-0.5 rounded text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0 shadow-sm animate-pulse">Live Systems Online</span>
+            <span class="text-gray-300 truncate font-medium">Veloqix Corridors & Industrial Logistics Freight Hubs operating at 100% capacity.</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0 font-medium">
+            <span class="hover:text-brandAccent transition cursor-pointer flex items-center"><i class="fa-solid fa-signal text-emerald-400 mr-1.5 animate-pulse"></i> Telemetry Active</span>
+            <span class="hover:text-brandAccent transition cursor-pointer flex items-center"><i class="fa-solid fa-shield-halved mr-1.5 text-brandAccent"></i> AES-256 Encrypted</span>
+            <span class="hover:text-brandAccent transition cursor-pointer flex items-center"><i class="fa-solid fa-headset mr-1.5 text-brandAccent"></i> 24/7 Operations Desk</span>
+        </div>
+    </div>
+
+    <!-- 2. MAIN NAVIGATION NAVBAR -->
+    <nav class="sticky top-0 z-50 glass-nav border-b border-gray-200/80 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl sm:text-2xl font-black text-brandMaersk flex items-center gap-2 tracking-tight group">
+                <i class="fa-solid fa-asterisk text-brandAccent text-2xl sm:text-3xl group-hover:rotate-90 transition-transform duration-500"></i> VELOQIX <span class="text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded shadow-sm">TECHNOLOGIES</span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-bold text-gray-700">
+                <a href="index.html" class="hover:text-brandAccent transition-colors">Home</a>
+                <a href="services.html" class="hover:text-brandAccent transition-colors">Transportation & Services</a>
+                <a href="products.html" class="text-brandAccent border-b-2 border-brandAccent pb-1">Proprietary Software</a>
+                <a href="solutions.html" class="hover:text-brandAccent transition-colors">Enterprise Solutions</a>
+                <a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a>
+                <a href="contact.html" class="hover:text-brandAccent transition-colors">Contact</a>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <a href="#flagship-products" class="hidden sm:inline-flex px-4 py-2 bg-brandMaersk text-white text-xs font-bold rounded hover:bg-gray-800 transition-all shadow-sm hover:shadow active:scale-95">Explore Platforms</a>
+                <!-- Mobile Navigation Button -->
+                <button id="mobileMenuBtn" class="lg:hidden p-2 text-brandMaersk text-xl focus:outline-none hover:text-brandAccent transition">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Drawer -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 px-6 py-4 space-y-3 font-bold text-sm text-gray-700 transition-all">
+            <a href="index.html" class="block hover:text-brandAccent transition">Home</a>
+            <a href="services.html" class="block hover:text-brandAccent transition">Transportation & Services</a>
+            <a href="products.html" class="block text-brandAccent">Proprietary Software</a>
+            <a href="solutions.html" class="block hover:text-brandAccent transition">Enterprise Solutions</a>
+            <a href="about.html" class="block hover:text-brandAccent transition">About Veloqix</a>
+            <a href="contact.html" class="block hover:text-brandAccent transition">Contact</a>
+        </div>
+    </nav>
+
+    <!-- 3. HERO SECTION WITH INTERACTIVE 3D DIGITAL MATRIX -->
+    <section class="bg-gradient-to-b from-brandMaersk via-brandMaersk to-brandDark text-white py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden min-h-[480px] flex items-center border-b border-gray-800">
+        <!-- 3D Interactive WebGL Canvas -->
+        <div id="hero-products-3d" class="absolute inset-0 z-0 opacity-50 cursor-grab active:cursor-grabbing"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10 w-full pointer-events-none">
+            <div class="max-w-3xl">
+                <span class="text-brandAccent uppercase font-extrabold text-xs tracking-widest block mb-3 pointer-events-auto bg-brandAccent/10 px-3 py-1 rounded-full w-fit border border-brandAccent/20">Our Platforms</span>
+                <h1 class="text-3xl sm:text-6xl font-black leading-tight tracking-tight mb-4 pointer-events-auto bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-300">
+                    Proprietary Software Ecosystem
+                </h1>
+                <p class="text-gray-300 text-sm sm:text-lg leading-relaxed pointer-events-auto mb-8 font-normal">
+                    High-performance digital products engineered for logistics recruitment, fleet workforce management, and automated property management. Engineered for extreme reliability and operational scale.
+                </p>
+                <div class="flex flex-wrap gap-4 pointer-events-auto">
+                    <a href="#flagship-products" class="px-6 py-3 bg-brandAccent text-brandMaersk font-extrabold rounded text-xs uppercase tracking-wider hover:bg-sky-400 transition-all shadow-lg hover:shadow-brandAccent/30 active:scale-95 flex items-center gap-2">
+                        Explore Platforms <i class="fa-solid fa-arrow-down ml-1"></i>
+                    </a>
+                    <a href="#feature-comparison" class="px-6 py-3 border border-white/30 text-white font-bold rounded text-xs uppercase tracking-wider hover:bg-white/10 backdrop-blur-sm transition-all active:scale-95">
+                        Compare Features
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. ECOSYSTEM HIGHLIGHTS BAR -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 relative z-20 w-full">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="border-r border-gray-100 last:border-0 pr-2">
+                <div class="text-2xl sm:text-4xl font-black text-brandMaersk tracking-tight">10,000+</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1 tracking-wider">Drivers & Workers Managed</div>
+            </div>
+            <div class="border-r border-gray-100 last:border-0 pr-2">
+                <div class="text-2xl sm:text-4xl font-black text-brandAccent tracking-tight">Automated</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1 tracking-wider">KYC & Rent Receipts</div>
+            </div>
+            <div class="border-r border-gray-100 last:border-0 pr-2">
+                <div class="text-2xl sm:text-4xl font-black text-brandMaersk tracking-tight">Farukhnagar / NCR</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1 tracking-wider">Logistics Hub Focus</div>
+            </div>
+            <div>
+                <div class="text-2xl sm:text-4xl font-black text-brandAccent tracking-tight">Instant</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1 tracking-wider">WhatsApp Integration</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. FLAGSHIP PRODUCTS SECTION WITH TECH STACK BADGES & LIVE DEMO LINKS -->
+    <section id="flagship-products" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        
+        <!-- PRODUCT 1: FN LOGISTIC HUB -->
+        <div class="mb-16 sm:mb-20 bg-white rounded-3xl border border-gray-200/80 shadow-xl overflow-hidden maersk-card-3d group">
+            <div class="p-8 sm:p-12 grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 card-inner-3d">
+                    <span class="px-3.5 py-1.5 bg-brandMaersk text-brandAccent rounded-lg text-[10px] sm:text-xs font-extrabold uppercase tracking-widest inline-block mb-4 shadow-sm">
+                        Flagship Logistics Platform
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk mb-3 tracking-tight">FN Logistic Hub</h2>
+                    
+                    <!-- Tech Stack Badges -->
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-brands fa-node-js text-emerald-600 mr-1.5 text-xs"></i> Node.js</span>
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-brands fa-react text-sky-500 mr-1.5 text-xs"></i> React.js</span>
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-solid fa-database text-amber-600 mr-1.5 text-xs"></i> MongoDB</span>
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-solid fa-server text-purple-600 mr-1.5 text-xs"></i> Render Host</span>
+                    </div>
+
+                    <p class="text-gray-600 text-xs sm:text-base leading-relaxed mb-6 font-normal">
+                        An enterprise-grade recruitment and workforce operational platform designed specifically for logistics fleets, warehousing hubs, and industrial clusters across Farukhnagar & National Capital Region (NCR).
+                    </p>
+                    
+                    <!-- Feature Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-user-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Automated KYC & Verification</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">Instant driving license and identity verification for heavy commercial vehicle drivers.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Warehouse Staff Deployment</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">On-demand recruitment for loaders, forklift operators, and yard managers.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-clock"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Attendance & Payout Matrix</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">Real-time shift tracking with dynamic daily/weekly payout calculations.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Compliance Dashboard</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">Complete regulatory safety checks and labor law audit trails.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-4">
+                        <a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="px-6 py-3.5 bg-brandMaersk text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
+                            Launch Live Portal <i class="fa-solid fa-arrow-up-right-from-square text-brandAccent"></i>
+                        </a>
+                        <a href="contact.html" class="px-5 py-3.5 border border-brandMaersk/30 text-brandMaersk text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brandMaersk hover:text-white transition-all active:scale-95">
+                            Request Private Demo
+                        </a>
+                        <span class="text-xs text-gray-500 font-medium w-full sm:w-auto flex items-center gap-1.5"><i class="fa-solid fa-circle text-emerald-500 text-[8px] animate-pulse"></i> Live Production Server</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 bg-gradient-to-br from-brandMaersk via-brandMaersk to-brandDark p-8 sm:p-10 rounded-2xl text-white flex flex-col justify-center relative overflow-hidden shadow-inner">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
+                        <i class="fa-solid fa-truck-fast text-[220px]"></i>
+                    </div>
+                    <div class="relative z-10 space-y-4">
+                        <h3 class="text-lg font-bold text-brandAccent uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> Platform Performance
+                        </h3>
+                        <div class="space-y-3.5 text-xs font-medium">
+                            <div class="flex justify-between border-b border-gray-800/80 pb-2.5">
+                                <span class="text-gray-400">Target Region:</span>
+                                <span class="font-bold text-white">Farukhnagar & NCR Hubs</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-800/80 pb-2.5">
+                                <span class="text-gray-400">Primary Users:</span>
+                                <span class="font-bold text-white">Fleet Operators & Logistics HR</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-800/80 pb-2.5">
+                                <span class="text-gray-400">Deployment SLA:</span>
+                                <span class="font-bold text-emerald-400">&lt; 4 Hours Turnaround</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Security Layer:</span>
+                                <span class="font-bold text-white">SSL + Encrypted Identity Vault</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCT 2: MYPGEASE -->
+        <div class="bg-white rounded-3xl border border-gray-200/80 shadow-xl overflow-hidden maersk-card-3d group">
+            <div class="p-8 sm:p-12 grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-5 bg-gradient-to-br from-gray-900 via-brandMaersk to-brandMaersk p-8 sm:p-10 rounded-2xl text-white flex flex-col justify-center relative overflow-hidden order-2 lg:order-1 shadow-inner">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
+                        <i class="fa-solid fa-building-user text-[220px]"></i>
+                    </div>
+                    <div class="relative z-10 space-y-4">
+                        <h3 class="text-lg font-bold text-brandAccent uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-microchip"></i> PropTech Automation
+                        </h3>
+                        <div class="space-y-3.5 text-xs font-medium">
+                            <div class="flex justify-between border-b border-gray-800/80 pb-2.5">
+                                <span class="text-gray-400">Target Segment:</span>
+                                <span class="font-bold text-white">PG & Commercial Properties</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-800/80 pb-2.5">
+                                <span class="text-gray-400">Billing Channel:</span>
+                                <span class="font-bold text-emerald-400">WhatsApp Direct API</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-800/80 pb-2.5">
+                                <span class="text-gray-400">Rent Engine:</span>
+                                <span class="font-bold text-white">Auto-Due Reminders</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Tenant Verification:</span>
+                                <span class="font-bold text-white">ID Automated Upload</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 card-inner-3d order-1 lg:order-2">
+                    <span class="px-3.5 py-1.5 bg-sky-100 text-brandMaersk rounded-lg text-[10px] sm:text-xs font-extrabold uppercase tracking-widest inline-block mb-4 shadow-sm">
+                        Smart PropTech Software
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk mb-3 tracking-tight">MyPGEase</h2>
+                    
+                    <!-- Tech Stack Badges -->
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-brands fa-python text-sky-600 mr-1.5 text-xs"></i> Python / Flask</span>
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-brands fa-whatsapp text-emerald-500 mr-1.5 text-xs"></i> WhatsApp API</span>
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-solid fa-database text-blue-600 mr-1.5 text-xs"></i> PostgreSQL</span>
+                        <span class="px-3 py-1 bg-sky-50 text-brandMaersk text-[10px] font-extrabold rounded-md border border-sky-200/80 shadow-sm flex items-center"><i class="fa-solid fa-cloud text-slate-600 mr-1.5 text-xs"></i> PythonAnywhere</span>
+                    </div>
+
+                    <p class="text-gray-600 text-xs sm:text-base leading-relaxed mb-6 font-normal">
+                        Automated property and PG management platform built to streamline tenant onboarding, KYC verification, automated rent calculation, and instant WhatsApp billing receipts.
+                    </p>
+
+                    <!-- Feature Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-brands fa-whatsapp text-lg"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">WhatsApp Automated Receipts</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">Instant payment confirmation receipts dispatched directly to tenant phones.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-calculator"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Dynamic Utility & Rent Calculation</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">Automatic electricity meter reading additions with split-bill calculation.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-id-card"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Digital Tenant Onboarding</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">Paperless tenant agreement signing and online police verification records.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5 p-2 rounded-xl hover:bg-gray-50/80 transition">
+                            <div class="w-9 h-9 rounded-xl bg-sky-100/70 text-brandAccent flex items-center justify-center shrink-0 font-bold shadow-sm"><i class="fa-solid fa-wrench"></i></div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-brandMaersk">Maintenance Desk</h4>
+                                <p class="text-gray-500 text-[11px] leading-tight mt-0.5">In-app ticketing system for maintenance requests and room service tracking.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-4">
+                        <a href="https://pgease.pythonanywhere.com" target="_blank" class="px-6 py-3.5 bg-brandMaersk text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
+                            Explore MyPGEase Live <i class="fa-solid fa-arrow-up-right-from-square text-brandAccent"></i>
+                        </a>
+                        <a href="contact.html" class="px-5 py-3.5 border border-brandMaersk/30 text-brandMaersk text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brandMaersk hover:text-white transition-all active:scale-95">
+                            Book PropTech Consultation
+                        </a>
+                        <span class="text-xs text-gray-500 font-medium w-full sm:w-auto flex items-center gap-1.5"><i class="fa-solid fa-circle text-emerald-500 text-[8px] animate-pulse"></i> Active Cloud Host</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 6. FEATURE COMPARISON TABLE SECTION -->
+    <section id="feature-comparison" class="max-w-7xl mx-auto px-4 sm:px-6 py-12 mb-20">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="text-brandAccent uppercase font-extrabold text-xs tracking-widest block mb-2 bg-sky-50 px-3 py-1 rounded-full w-fit mx-auto border border-sky-100">Platform Matrix</span>
+            <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk tracking-tight">Ecosystem Feature Comparison</h2>
+            <p class="text-gray-600 text-xs sm:text-sm mt-2 font-normal">Compare capabilities across FN Logistic Hub & MyPGEase</p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-gray-200/80 shadow-xl overflow-hidden overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                    <tr class="bg-brandMaersk text-white text-xs uppercase tracking-wider border-b border-gray-800">
+                        <th class="py-5 px-6 font-extrabold">Feature / Capability</th>
+                        <th class="py-5 px-6 font-extrabold text-brandAccent">FN Logistic Hub</th>
+                        <th class="py-5 px-6 font-extrabold text-brandAccent">MyPGEase</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-xs sm:text-sm text-gray-700 font-medium">
+                    <tr class="hover:bg-sky-50/50 transition">
+                        <td class="py-4 px-6 font-bold text-brandMaersk">Primary Industry</td>
+                        <td class="py-4 px-6">Logistics & Supply Chain</td>
+                        <td class="py-4 px-6">PropTech & Real Estate</td>
+                    </tr>
+                    <tr class="hover:bg-sky-50/50 transition">
+                        <td class="py-4 px-6 font-bold text-brandMaersk">User Verification (KYC)</td>
+                        <td class="py-4 px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-sm"></i> Heavy Driver License & Aadhar</td>
+                        <td class="py-4 px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-sm"></i> Tenant Identity & Police Record</td>
+                    </tr>
+                    <tr class="hover:bg-sky-50/50 transition">
+                        <td class="py-4 px-6 font-bold text-brandMaersk">Automated Billing & Receipts</td>
+                        <td class="py-4 px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-sm"></i> Shift & Consignment Invoicing</td>
+                        <td class="py-4 px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-sm"></i> Instant WhatsApp Rent Receipts</td>
+                    </tr>
+                    <tr class="hover:bg-sky-50/50 transition">
+                        <td class="py-4 px-6 font-bold text-brandMaersk">Workforce / Tenant Dispatch</td>
+                        <td class="py-4 px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-sm"></i> On-Demand Driver Allocation</td>
+                        <td class="py-4 px-6"><i class="fa-solid fa-minus text-gray-300"></i> N/A (Room Allotment)</td>
+                    </tr>
+                    <tr class="hover:bg-sky-50/50 transition">
+                        <td class="py-4 px-6 font-bold text-brandMaersk">Live Production Server</td>
+                        <td class="py-4 px-6"><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="text-brandAccent font-bold hover:underline flex items-center gap-1">fn-logistic-hub.onrender.com <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a></td>
+                        <td class="py-4 px-6"><a href="https://pgease.pythonanywhere.com" target="_blank" class="text-brandAccent font-bold hover:underline flex items-center gap-1">pgease.pythonanywhere.com <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 7. ENTERPRISE CTA SECTION -->
+    <section class="bg-gradient-to-r from-brandMaersk via-brandMaersk to-brandDark text-white py-14 px-4 sm:px-6 border-t border-gray-800 relative overflow-hidden mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left relative z-10">
+            <div>
+                <h3 class="text-xl sm:text-3xl font-black tracking-tight">Need Custom Software Tailored to Your Logistics Fleet?</h3>
+                <p class="text-gray-300 text-xs sm:text-sm mt-1.5 font-normal">Our engineering team designs bespoke web and mobile platforms for enterprise customers.</p>
+            </div>
+            <a href="contact.html" class="px-8 py-4 bg-brandAccent text-brandMaersk font-extrabold rounded-xl hover:bg-sky-400 transition-all text-xs uppercase tracking-wider shrink-0 shadow-lg hover:shadow-brandAccent/30 active:scale-95 flex items-center gap-2">
+                Contact Product Engineers <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 8. MAERSK-STYLE CORPORATE FOOTER -->
+    <footer class="bg-brandDark text-white py-12 sm:py-16 border-t border-gray-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <div>
+                <div class="text-lg sm:text-xl font-black tracking-tight mb-3 sm:mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-asterisk text-brandAccent text-2xl"></i> VELOQIX
+                </div>
+                <p class="text-gray-400 leading-relaxed font-normal">Integrated Freight Logistics, Industrial Workforce Recruitment, and Custom Software Solutions.</p>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-3 sm:mb-4 uppercase tracking-wider text-xs sm:text-sm">Platforms</h5>
+                <ul class="space-y-2.5 text-gray-400 font-medium">
+                    <li><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="hover:text-brandAccent transition">FN Logistic Hub Portal</a></li>
+                    <li><a href="https://pgease.pythonanywhere.com" target="_blank" class="hover:text-brandAccent transition">MyPGEase PropTech</a></li>
+                    <li><a href="solutions.html" class="hover:text-brandAccent transition">Custom SaaS Engineering</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-3 sm:mb-4 uppercase tracking-wider text-xs sm:text-sm">Corporate</h5>
+                <ul class="space-y-2.5 text-gray-400 font-medium">
+                    <li><a href="about.html" class="hover:text-brandAccent transition">About Veloqix</a></li>
+                    <li><a href="contact.html" class="hover:text-brandAccent transition">Enterprise Sales</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-3 sm:mb-4 uppercase tracking-wider text-xs sm:text-sm">Headquarters</h5>
+                <p class="text-gray-400 leading-relaxed mb-3 font-medium">Veloqix Tech Hub, Gurugram, Haryana, India.</p>
+                <p class="text-gray-400 font-medium"><i class="fa-solid fa-envelope mr-2 text-brandAccent"></i> contact@veloqix.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-gray-800/60 text-center text-gray-500 font-medium">
+            © 2026 Veloqix Technologies. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- MOBILE MENU DRAWER SCRIPT -->
+    <script>
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIcon = document.getElementById('menuIcon');
+
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                menuIcon.classList.toggle('fa-bars');
+                menuIcon.classList.toggle('fa-xmark');
+            });
+        }
+    </script>
+
+    <!-- THREE.JS 3D HERO CANVAS SCRIPT -->
+    <script>
+        (function initProducts3D() {
+            const container = document.getElementById('hero-products-3d');
+            if(!container) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Group matrix of digital cube nodes
+            const group = new THREE.Group();
+            const cubeGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+            const cubeMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true, transparent: true, opacity: 0.45 });
+
+            for(let x = -2; x <= 2; x += 2) {
+                for(let y = -2; y <= 2; y += 2) {
+                    for(let z = -2; z <= 2; z += 2) {
+                        const cube = new THREE.Mesh(cubeGeo, cubeMat);
+                        cube.position.set(x, y, z);
+                        group.add(cube);
+                    }
+                }
+            }
+            scene.add(group);
+            camera.position.z = 7;
+
+            let mouseX = 0, mouseY = 0;
+            function onPointerMove(e) {
+                const x = e.clientX || (e.touches && e.touches[0].clientX);
+                const y = e.clientY || (e.touches && e.touches[0].clientY);
+                if(x && y) {
+                    mouseX = (x - window.innerWidth / 2) * 0.0008;
+                    mouseY = (y - window.innerHeight / 2) * 0.0008;
+                }
+            }
+            window.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('touchmove', onPointerMove);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                group.rotation.y += 0.003 + mouseX * 0.05;
+                group.rotation.x += 0.0015 + mouseY * 0.05;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        })();
+
+        // 3D Tilt Hover Effect on Product Cards
+        const cards = document.querySelectorAll('.maersk-card-3d');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                card.style.transform = `rotateX(${-y / 30}deg) rotateY(${x / 30}deg) scale3d(1.01, 1.01, 1.01)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            });
+        });
+    </script>
+</body>
+</html>

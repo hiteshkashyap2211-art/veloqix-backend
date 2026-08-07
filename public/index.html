@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-x-hidden scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Veloqix Technologies | Integrated Container Logistics & Enterprise Supply Chain</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for Interactive 3D WebGL Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandMaersk: '#00243A',
+                        brandAccent: '#40B2E6',
+                        brandBg: '#F4F5F7',
+                        brandDark: '#0A121A',
+                        brandGold: '#D4AF37'
+                    },
+                    screens: {
+                        'xs': '380px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .maersk-card-3d {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+        }
+        @media (min-width: 768px) {
+            .maersk-card-3d:hover {
+                transform: translateY(-8px) scale(1.01);
+                box-shadow: 0 30px 60px -12px rgba(0, 36, 58, 0.22);
+            }
+        }
+        .tab-btn {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #00243A;
+            font-weight: 800;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #40B2E6;
+            border-radius: 9999px;
+        }
+        .cap-tab.active {
+            background-color: #00243A;
+            color: #FFFFFF;
+            border-color: #40B2E6;
+            box-shadow: 0 4px 12px rgba(0, 36, 58, 0.15);
+        }
+        #hero-globe-3d {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: auto;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-brandBg text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-brandAccent selection:text-brandMaersk">
+
+    <!-- 1. GLOBAL ANNOUNCEMENT & SYSTEM TELEMETRY TICKER -->
+    <div class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-3 sm:px-6 flex justify-between items-center border-b border-gray-800 relative z-50">
+        <div class="flex items-center gap-2 sm:gap-3 overflow-hidden whitespace-nowrap">
+            <span class="bg-brandAccent text-brandMaersk font-black px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] uppercase tracking-wider shrink-0 shadow-sm animate-pulse">Live Systems Online</span>
+            <span class="text-gray-300 truncate">Veloqix Corridors & Industrial Logistics Freight Hubs operating at 100% capacity.</span>
+        </div>
+        <div class="hidden md:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0">
+            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200"><i class="fa-solid fa-signal text-emerald-400 mr-1"></i> Telemetry Active</span>
+            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200"><i class="fa-solid fa-shield-halved mr-1"></i> AES-256 Encrypted</span>
+            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200"><i class="fa-solid fa-headset mr-1"></i> 24/7 Operations Desk</span>
+        </div>
+    </div>
+
+    <!-- 2. MAIN NAVIGATION NAVBAR -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex justify-between items-center">
+            <a href="index.html" class="text-lg sm:text-2xl font-black text-brandMaersk flex items-center gap-1.5 sm:gap-2 tracking-tight hover:opacity-90 transition">
+                <i class="fa-solid fa-asterisk text-brandAccent text-xl sm:text-3xl animate-spin-slow"></i> 
+                <span>VELOQIX <span class="text-[9px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded">TECHNOLOGIES</span></span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-bold text-gray-700">
+                <a href="index.html" class="text-brandAccent border-b-2 border-brandAccent pb-1">Home</a>
+                <a href="services.html" class="hover:text-brandAccent transition-colors duration-200">Transportation & Services</a>
+                <a href="products.html" class="hover:text-brandAccent transition-colors duration-200">Proprietary Software</a>
+                <a href="solutions.html" class="hover:text-brandAccent transition-colors duration-200">Enterprise Solutions</a>
+                <a href="about.html" class="hover:text-brandAccent transition-colors duration-200">About Veloqix</a>
+                <a href="contact.html" class="hover:text-brandAccent transition-colors duration-200">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <div class="flex items-center space-x-2 lg:hidden">
+                <button id="mobileMenuBtn" class="p-2 text-brandMaersk text-xl focus:outline-none hover:bg-gray-100 rounded-lg transition" aria-label="Toggle Navigation">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Drawer -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-200 px-5 py-4 space-y-3 font-bold text-sm text-gray-700 shadow-xl transition-all duration-300">
+            <a href="index.html" class="block text-brandAccent bg-sky-50 px-3 py-2 rounded-lg">Home</a>
+            <a href="services.html" class="block py-1.5 px-3 hover:bg-gray-50 rounded-lg hover:text-brandAccent transition-colors">Transportation & Services</a>
+            <a href="products.html" class="block py-1.5 px-3 hover:bg-gray-50 rounded-lg hover:text-brandAccent transition-colors">Proprietary Software</a>
+            <a href="solutions.html" class="block py-1.5 px-3 hover:bg-gray-50 rounded-lg hover:text-brandAccent transition-colors">Enterprise Solutions</a>
+            <a href="about.html" class="block py-1.5 px-3 hover:bg-gray-50 rounded-lg hover:text-brandAccent transition-colors">About Veloqix</a>
+            <a href="contact.html" class="block py-1.5 px-3 hover:bg-gray-50 rounded-lg hover:text-brandAccent transition-colors">Contact</a>
+        </div>
+    </nav>
+
+    <!-- 3. HERO SECTION WITH INTERACTIVE 3D WebGL CANVAS & MULTI-TAB TRACKING CONSOLE -->
+    <section class="relative bg-gradient-to-r from-brandMaersk via-[#001D2F] to-[#04101A] text-white py-12 sm:py-20 lg:py-28 px-4 sm:px-6 overflow-hidden min-h-[600px] lg:min-h-[700px] flex items-center">
+        
+        <!-- 3D Globe Interactive Canvas -->
+        <div id="hero-globe-3d" class="opacity-50 cursor-grab active:cursor-grabbing transition-opacity duration-500"></div>
+
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 w-full pointer-events-none">
+            
+            <div class="lg:col-span-7 text-center lg:text-left pointer-events-auto">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 rounded-full border border-white/20 mb-5 backdrop-blur-md shadow-inner">
+                    <span class="w-2.5 h-2.5 rounded-full bg-brandAccent animate-ping"></span>
+                    <span class="text-brandAccent font-black text-[10px] sm:text-xs uppercase tracking-widest">Next-Gen Integrated Supply Chain</span>
+                </div>
+                <h1 class="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight drop-shadow-md">
+                    Connecting logistics, workforce & infrastructure seamlessly.
+                </h1>
+                <p class="mt-4 sm:mt-5 text-gray-300 text-xs sm:text-base lg:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                    Veloqix Technologies integrates inland intermodal transport, verified warehouse workforce dispatch, and PropTech automation under one unified enterprise platform.
+                </p>
+                <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4">
+                    <a href="services.html" class="w-full sm:w-auto px-8 py-3.5 bg-brandAccent text-brandMaersk font-extrabold rounded-lg hover:bg-sky-400 hover:shadow-sky-500/25 transition shadow-lg text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center gap-2">
+                        <span>Explore Capabilities</span>
+                        <i class="fa-solid fa-arrow-right-long"></i>
+                    </a>
+                    <a href="contact.html" class="w-full sm:w-auto px-8 py-3.5 border border-white/40 text-white font-bold rounded-lg hover:bg-white/10 hover:border-white transition text-xs sm:text-sm uppercase tracking-wider backdrop-blur-md text-center">
+                        Enterprise Sales
+                    </a>
+                </div>
+            </div>
+
+            <!-- MAERSK-STYLE INTERACTIVE TRACKING & SEARCH CONSOLE -->
+            <div class="lg:col-span-5 glass-panel text-gray-900 rounded-2xl p-5 sm:p-8 shadow-2xl relative z-20 border border-white/40 mt-4 lg:mt-0 pointer-events-auto">
+                <!-- Switcher Tabs -->
+                <div class="flex border-b border-gray-200/80 mb-5 gap-3 sm:gap-6 text-xs sm:text-sm font-bold text-gray-500 overflow-x-auto pb-1">
+                    <button id="tabTrackBtn" onclick="switchTrackTab('track')" class="tab-btn active pb-3 flex items-center gap-2 shrink-0">
+                        <i class="fa-solid fa-magnifying-glass text-brandAccent"></i> Track Consignment
+                    </button>
+                    <button id="tabScheduleBtn" onclick="switchTrackTab('schedule')" class="tab-btn pb-3 flex items-center gap-2 hover:text-brandMaersk shrink-0">
+                        <i class="fa-solid fa-calendar-days"></i> Schedules
+                    </button>
+                    <button id="tabWorkforceBtn" onclick="switchTrackTab('workforce')" class="tab-btn pb-3 flex items-center gap-2 hover:text-brandMaersk shrink-0">
+                        <i class="fa-solid fa-user-group"></i> Workforce
+                    </button>
+                </div>
+                
+                <!-- Tab 1: Track Consignment -->
+                <div id="panelTrack" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Consignment Number, B/L or Job ID</label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="trackInput" placeholder="e.g. VLX-8802-NCR or Phone" class="w-full px-4 py-3 sm:py-3.5 border border-gray-300/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent focus:border-transparent text-xs sm:text-sm font-medium transition">
+                            <button id="trackSubmitBtn" onclick="handleTrackSearch()" class="w-full sm:w-auto px-7 py-3 sm:py-3.5 bg-brandMaersk text-white font-bold rounded-xl hover:bg-gray-800 transition active:scale-95 shrink-0 uppercase text-xs flex items-center justify-center gap-2 shadow-md">
+                                <span>Track</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="trackResult" class="hidden p-3.5 bg-sky-50 border border-brandAccent/30 rounded-xl text-xs text-brandMaersk font-semibold shadow-sm">
+                        <i class="fa-solid fa-circle-notch fa-spin text-brandAccent mr-1.5"></i> Telemetry active: Querying Veloqix Core APIs...
+                    </div>
+                    <p class="text-[10px] sm:text-[11px] text-gray-400 flex items-center gap-1.5 pt-1">
+                        <i class="fa-solid fa-shield-halved text-brandAccent"></i> Real-time multi-point telemetry via Veloqix Core APIs.
+                    </p>
+                </div>
+
+                <!-- Tab 2: Inland Schedules -->
+                <div id="panelSchedule" class="space-y-4 hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Origin Hub</label>
+                            <input type="text" id="schedOrigin" placeholder="Farukhnagar / Delhi" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Destination Hub</label>
+                            <input type="text" id="schedDestination" placeholder="NCR / Regional ICD" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent">
+                        </div>
+                    </div>
+                    <button onclick="handleScheduleSearch()" class="w-full py-3.5 bg-brandMaersk text-white text-xs font-bold uppercase rounded-xl hover:bg-gray-800 transition shadow-md">Search Corridors</button>
+                </div>
+
+                <!-- Tab 3: Workforce Sourcing -->
+                <div id="panelWorkforce" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Role / Industrial Skill</label>
+                        <select id="workforceRoleSelect" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent bg-white">
+                            <option>Forklift Operators & Yard Staff</option>
+                            <option>Warehouse Pickers & Packers</option>
+                            <option>Heavy Vehicle Drivers (Commercial KYC)</option>
+                            <option>Facility Operations Supervisors</option>
+                        </select>
+                    </div>
+                    <button onclick="handleWorkforceSelect()" class="w-full py-3.5 bg-brandAccent text-brandMaersk text-xs font-extrabold uppercase rounded-xl hover:bg-sky-400 transition shadow-md block text-center">
+                        Launch FN Hub Sourcing Portal <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 4. QUICK ONBOARDING PLATFORM CARDS -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-12 relative z-30">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-brandAccent maersk-card-3d hover:shadow-2xl">
+                <div class="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center text-brandAccent text-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <h3 class="font-black text-xl text-brandMaersk">Logistics Solutions</h3>
+                <p class="text-xs text-gray-600 mt-2 leading-relaxed">Inland container haulage, intermodal freight schedules, and dedicated yard management.</p>
+                <a href="services.html" class="inline-flex items-center mt-5 text-xs font-extrabold text-brandAccent hover:text-sky-600 gap-1.5 transition">
+                    Discover Capabilities <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-brandMaersk maersk-card-3d hover:shadow-2xl">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-brandMaersk text-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                </div>
+                <h3 class="font-black text-xl text-brandMaersk">FN Logistic Hub</h3>
+                <p class="text-xs text-gray-600 mt-2 leading-relaxed">Source verified warehouse pickers, loaders, and supervisors across major industrial corridors.</p>
+                <a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="inline-flex items-center mt-5 text-xs font-extrabold text-brandMaersk hover:text-brandAccent gap-1.5 transition">
+                    Access FN Portal <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-gray-900 maersk-card-3d hover:shadow-2xl">
+                <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-900 text-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-building-circle-check"></i>
+                </div>
+                <h3 class="font-black text-xl text-brandMaersk">MyPGEase PropTech</h3>
+                <p class="text-xs text-gray-600 mt-2 leading-relaxed">Automated tenant onboarding, digital KYC, rent invoicing, and instant WhatsApp billing.</p>
+                <a href="https://pgease.pythonanywhere.com" target="_blank" class="inline-flex items-center mt-5 text-xs font-extrabold text-brandMaersk hover:text-brandAccent gap-1.5 transition">
+                    Explore MyPGEase <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. ENTERPRISE METRICS IMPACT BAR -->
+    <section class="py-12 sm:py-16 bg-white my-12 border-y border-gray-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div class="p-4 rounded-xl hover:bg-gray-50 transition">
+                <div class="text-3xl sm:text-5xl font-black text-brandMaersk tracking-tight">10,000+</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mt-2">Verified Workforce Records</div>
+            </div>
+            <div class="p-4 rounded-xl hover:bg-gray-50 transition">
+                <div class="text-3xl sm:text-5xl font-black text-brandAccent tracking-tight">50+</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mt-2">Active Logistics Fleet Vehicles</div>
+            </div>
+            <div class="p-4 rounded-xl hover:bg-gray-50 transition">
+                <div class="text-3xl sm:text-5xl font-black text-brandMaersk tracking-tight">24/7</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mt-2">API Telemetry Uptime</div>
+            </div>
+            <div class="p-4 rounded-xl hover:bg-gray-50 transition">
+                <div class="text-3xl sm:text-5xl font-black text-brandAccent tracking-tight">99.9%</div>
+                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mt-2">SLA Compliance Rate</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. DYNAMIC CAPABILITIES SHOWCASE WITH TAB PREVIEWS -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <span class="text-brandAccent uppercase font-black text-xs tracking-widest block mb-2">Integrated Infrastructure</span>
+            <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk">End-to-End Enterprise Capabilities</h2>
+            <p class="text-gray-600 text-xs sm:text-sm mt-2">From ground freight movement to proprietary software, Veloqix powers every link in your supply chain.</p>
+        </div>
+
+        <!-- Capability Selection Tabs -->
+        <div class="flex flex-wrap justify-center gap-2.5 mb-8">
+            <button onclick="showCapability('intermodal')" id="capTab-intermodal" class="cap-tab active px-5 py-2.5 rounded-xl border text-xs font-bold transition duration-200">
+                <i class="fa-solid fa-truck-moving mr-1.5"></i> Intermodal Transport
+            </button>
+            <button onclick="showCapability('fn')" id="capTab-fn" class="cap-tab px-5 py-2.5 rounded-xl border border-gray-300/80 text-gray-700 text-xs font-bold transition duration-200">
+                <i class="fa-solid fa-users mr-1.5"></i> FN Workforce Portal
+            </button>
+            <button onclick="showCapability('pgease')" id="capTab-pgease" class="cap-tab px-5 py-2.5 rounded-xl border border-gray-300/80 text-gray-700 text-xs font-bold transition duration-200">
+                <i class="fa-solid fa-building mr-1.5"></i> MyPGEase PropTech
+            </button>
+            <button onclick="showCapability('api')" id="capTab-api" class="cap-tab px-5 py-2.5 rounded-xl border border-gray-300/80 text-gray-700 text-xs font-bold transition duration-200">
+                <i class="fa-solid fa-network-wired mr-1.5"></i> Custom Enterprise APIs
+            </button>
+        </div>
+
+        <!-- Capability Display Box -->
+        <div class="bg-white rounded-2xl border border-gray-200/80 p-6 sm:p-12 shadow-xl">
+            
+            <!-- Intermodal -->
+            <div id="capContent-intermodal" class="grid lg:grid-cols-2 gap-8 items-center">
+                <div>
+                    <span class="px-3 py-1 bg-sky-100 text-brandMaersk text-[10px] font-extrabold uppercase rounded-md mb-3 inline-block">Ground Freight Logistics</span>
+                    <h3 class="text-2xl font-black text-brandMaersk mb-3">Intermodal Fleet Operations</h3>
+                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6">Dedicated freight haulage connecting industrial zones and inland container depots with real-time routing telemetry and GPS tracking.</p>
+                    <ul class="space-y-2.5 text-xs font-semibold text-gray-700 mb-6">
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> Farukhnagar & NCR Corridor Connectivity</li>
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> Yard & Loading Bay Automated Logs</li>
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> 24/7 Security & Driver Verification</li>
+                    </ul>
+                    <a href="services.html" class="px-6 py-3 bg-brandMaersk text-white font-bold text-xs uppercase rounded-xl hover:bg-gray-800 transition inline-block shadow-md">Learn More</a>
+                </div>
+                <div class="bg-brandDark rounded-2xl p-6 sm:p-8 text-white border border-gray-800 space-y-4 shadow-2xl">
+                    <div class="text-xs text-brandAccent font-bold uppercase tracking-wider">Corridor Status</div>
+                    <div class="text-xl font-bold">Farukhnagar ↔ Delhi NCR</div>
+                    <div class="text-xs text-gray-400">Average Transit SLA: &lt; 3.5 Hours</div>
+                    <div class="w-full bg-gray-800 rounded-full h-2.5 mt-4 overflow-hidden">
+                        <div class="bg-brandAccent h-full rounded-full w-[92%] transition-all duration-1000"></div>
+                    </div>
+                    <div class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1.5 pt-1">
+                        <i class="fa-solid fa-bolt"></i> 92% On-Time Dispatch SLA Achieved
+                    </div>
+                </div>
+            </div>
+
+            <!-- FN Hub -->
+            <div id="capContent-fn" class="grid lg:grid-cols-2 gap-8 items-center hidden">
+                <div>
+                    <span class="px-3 py-1 bg-sky-100 text-brandMaersk text-[10px] font-extrabold uppercase rounded-md mb-3 inline-block">Workforce Recruitment</span>
+                    <h3 class="text-2xl font-black text-brandMaersk mb-3">FN Logistic Hub Platform</h3>
+                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6">A specialized workforce portal connecting warehouses, fleet owners, and operational supervisors across NCR corridors with instant onboarding.</p>
+                    <ul class="space-y-2.5 text-xs font-semibold text-gray-700 mb-6">
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> Verified Warehouse Pickers & Packers</li>
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> Automated Driver License KYC</li>
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> Dynamic Shift & Payout Matrix</li>
+                    </ul>
+                    <a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="px-6 py-3 bg-brandMaersk text-white font-bold text-xs uppercase rounded-xl hover:bg-gray-800 transition inline-block shadow-md">Launch Portal <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-brandAccent"></i></a>
+                </div>
+                <div class="bg-brandMaersk rounded-2xl p-6 sm:p-8 text-white border border-gray-800 space-y-4 shadow-2xl">
+                    <div class="text-xs text-brandAccent font-bold uppercase tracking-wider">Active Talent Pool</div>
+                    <div class="text-2xl font-bold">10,000+ Verified Workers</div>
+                    <div class="text-xs text-gray-300">Turnaround Time: &lt; 4 Hours Onboarding</div>
+                    <div class="p-3.5 bg-white/10 rounded-xl text-xs text-emerald-300 backdrop-blur-sm border border-white/10">
+                        <i class="fa-solid fa-shield-halved mr-1.5"></i> KYC Compliant & Verified
+                    </div>
+                </div>
+            </div>
+
+            <!-- MyPGEase -->
+            <div id="capContent-pgease" class="grid lg:grid-cols-2 gap-8 items-center hidden">
+                <div>
+                    <span class="px-3 py-1 bg-sky-100 text-brandMaersk text-[10px] font-extrabold uppercase rounded-md mb-3 inline-block">PropTech Platform</span>
+                    <h3 class="text-2xl font-black text-brandMaersk mb-3">MyPGEase Smart Automation</h3>
+                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6">Cloud-native property management suite enabling automated rent calculations, tenant KYC, and automated WhatsApp receipts.</p>
+                    <ul class="space-y-2.5 text-xs font-semibold text-gray-700 mb-6">
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> WhatsApp Invoicing & Receipts</li>
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> Utility Electricity Meter Calculator</li>
+                        <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-brandAccent text-sm"></i> In-App Maintenance Desk</li>
+                    </ul>
+                    <a href="https://pgease.pythonanywhere.com" target="_blank" class="px-6 py-3 bg-brandMaersk text-white font-bold text-xs uppercase rounded-xl hover:bg-gray-800 transition inline-block shadow-md">Explore MyPGEase <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-brandAccent"></i></a>
+                </div>
+                <div class="bg-brandDark rounded-2xl p-6 sm:p-8 text-white border border-gray-800 space-y-4 shadow-2xl">
+                    <div class="text-xs text-brandAccent font-bold uppercase tracking-wider">PropTech Automation</div>
+                    <div class="text-2xl font-bold">WhatsApp Direct Integration</div>
+                    <div class="text-xs text-gray-300">Automated Due Alerts & Reminders</div>
+                </div>
+            </div>
+
+            <!-- Custom Enterprise APIs -->
+            <div id="capContent-api" class="grid lg:grid-cols-2 gap-8 items-center hidden">
+                <div>
+                    <span class="px-3 py-1 bg-sky-100 text-brandMaersk text-[10px] font-extrabold uppercase rounded-md mb-3 inline-block">Software Architecture</span>
+                    <h3 class="text-2xl font-black text-brandMaersk mb-3">API Integration & Custom SaaS</h3>
+                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6">Seamlessly connect Veloqix core modules directly to your existing enterprise ERPs like SAP or Oracle for real-time logistics sync.</p>
+                    <a href="solutions.html" class="px-6 py-3 bg-brandMaersk text-white font-bold text-xs uppercase rounded-xl hover:bg-gray-800 transition inline-block shadow-md">View Solutions</a>
+                </div>
+                <div class="bg-gradient-to-br from-brandMaersk to-brandDark rounded-2xl p-6 sm:p-8 text-white border border-gray-800 space-y-4 shadow-2xl">
+                    <div class="text-xs text-brandAccent font-bold uppercase tracking-wider">Enterprise Specs</div>
+                    <div class="text-2xl font-bold">RESTful & GraphQL APIs</div>
+                    <div class="text-xs text-gray-300">Uptime Guarantee: 99.9% High Availability</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 7. PROPRIETARY PRODUCT SHOWCASE BANNER -->
+    <section class="py-16 sm:py-20 bg-brandMaersk text-white my-12 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-brandAccent font-bold text-xs uppercase tracking-widest">Our SaaS Ecosystem</span>
+                <h2 class="text-2xl sm:text-4xl font-black mt-2">Proprietary Digital Products</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- FN Hub Card -->
+                <div class="bg-white/5 border border-white/10 p-6 sm:p-8 rounded-2xl backdrop-blur-md flex flex-col justify-between hover:border-brandAccent transition duration-300 group">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-brandAccent text-brandMaersk text-[10px] font-extrabold uppercase px-3 py-1 rounded-md">Logistics Recruitment</span>
+                            <i class="fa-solid fa-boxes-stacked text-2xl text-brandAccent group-hover:scale-110 transition duration-300"></i>
+                        </div>
+                        <h3 class="text-2xl font-black mb-2">FN Logistic Hub</h3>
+                        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6">A specialized workforce portal connecting warehouses, fleet owners, and operational supervisors across NCR corridors with instant onboarding.</p>
+                    </div>
+                    <a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="w-full px-6 py-3.5 bg-brandAccent text-brandMaersk font-extrabold text-xs uppercase rounded-xl hover:bg-sky-400 transition text-center shadow-lg">
+                        Launch FN Hub Portal <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- MyPGEase Card -->
+                <div class="bg-white/5 border border-white/10 p-6 sm:p-8 rounded-2xl backdrop-blur-md flex flex-col justify-between hover:border-brandAccent transition duration-300 group">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-white text-brandMaersk text-[10px] font-extrabold uppercase px-3 py-1 rounded-md">Smart PropTech</span>
+                            <i class="fa-solid fa-building text-2xl text-white group-hover:scale-110 transition duration-300"></i>
+                        </div>
+                        <h3 class="text-2xl font-black mb-2">MyPGEase</h3>
+                        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6">Cloud-native property management suite enabling automated rent calculations, tenant KYC, and automated WhatsApp receipts.</p>
+                    </div>
+                    <a href="https://pgease.pythonanywhere.com" target="_blank" class="w-full px-6 py-3.5 border border-white/80 text-white font-extrabold text-xs uppercase rounded-xl hover:bg-white hover:text-brandMaersk transition text-center backdrop-blur-sm">
+                        Explore MyPGEase <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. CORPORATE NEWSROOM & INSIGHTS -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10">
+            <div>
+                <span class="text-brandAccent uppercase font-bold text-xs tracking-widest">Latest Updates</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-brandMaersk mt-1">Newsroom & Industry Insights</h2>
+            </div>
+            <a href="about.html" class="mt-3 md:mt-0 text-xs font-bold text-brandMaersk hover:text-brandAccent uppercase tracking-wider transition">
+                View All Insights <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <article class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl border border-gray-100 maersk-card-3d p-6">
+                <span class="text-[10px] font-bold text-brandAccent uppercase tracking-wider">Press Release • 2026</span>
+                <h3 class="font-bold text-base text-brandMaersk mt-2 mb-2">Veloqix Expands Inland Freight Capacity Across NCR Corridors</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">Enhancing driver dispatch efficiency and fleet response times for regional industrial hubs.</p>
+            </article>
+
+            <article class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl border border-gray-100 maersk-card-3d p-6">
+                <span class="text-[10px] font-bold text-brandAccent uppercase tracking-wider">Case Study</span>
+                <h3 class="font-bold text-base text-brandMaersk mt-2 mb-2">How FN Hub Reduced Warehouse Hiring Delays by 60%</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">A detailed analysis of automated verification and shift assignment for logistics warehouses.</p>
+            </article>
+
+            <article class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl border border-gray-100 maersk-card-3d p-6">
+                <span class="text-[10px] font-bold text-brandAccent uppercase tracking-wider">Technology</span>
+                <h3 class="font-bold text-base text-brandMaersk mt-2 mb-2">Automating Property Invoicing via WhatsApp Micro-APIs</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">Exploring how MyPGEase streamlines rent collections with instant payment links and automated receipts.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- 9. MAERSK-STYLE CORPORATE FOOTER -->
+    <footer class="bg-brandMaersk text-white py-12 sm:py-16 border-t border-gray-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <div>
+                <div class="text-lg sm:text-xl font-black tracking-tight mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-asterisk text-brandAccent text-2xl"></i> VELOQIX
+                </div>
+                <p class="text-gray-400 leading-relaxed">Integrated Freight Logistics, Industrial Workforce Recruitment, and Custom Software Solutions.</p>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Solutions</h5>
+                <ul class="space-y-2.5 text-gray-400">
+                    <li><a href="services.html" class="hover:text-brandAccent transition-colors">Intermodal Transport</a></li>
+                    <li><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="hover:text-brandAccent transition-colors">FN Logistic Hub Portal</a></li>
+                    <li><a href="https://pgease.pythonanywhere.com" target="_blank" class="hover:text-brandAccent transition-colors">MyPGEase PropTech</a></li>
+                    <li><a href="solutions.html" class="hover:text-brandAccent transition-colors">Custom SaaS Architecture</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Corporate</h5>
+                <ul class="space-y-2.5 text-gray-400">
+                    <li><a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a></li>
+                    <li><a href="contact.html" class="hover:text-brandAccent transition-colors">Enterprise Sales</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition-colors">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Headquarters</h5>
+                <p class="text-gray-400 leading-relaxed mb-3">Veloqix Tech Hub, Gurugram, Haryana, India.</p>
+                <p class="text-gray-400"><i class="fa-solid fa-envelope mr-1 text-brandAccent"></i> contact@veloqix.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16 pt-8 border-t border-gray-800 text-center text-gray-500">
+            © 2026 Veloqix Technologies. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- 10. TRACKING RESULT MODAL POP-UP -->
+    <div id="trackingModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100 transform transition-all scale-95 duration-300" id="modalCard">
+            <!-- Close Button -->
+            <button id="closeModalBtn" onclick="closeTrackingModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-sky-50 text-brandAccent flex items-center justify-center text-xl font-bold shadow-sm">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-brandMaersk" id="modalTrackingId">Consignment #VLX-8802-NCR</h3>
+                    <p class="text-xs text-gray-500 font-medium">Real-Time Telemetry Data • Veloqix Core Node</p>
+                </div>
+            </div>
+
+            <!-- Status Overview Cards -->
+            <div class="grid grid-cols-2 gap-3 mb-6 text-xs">
+                <div class="bg-brandBg p-3.5 rounded-xl border border-gray-200/60">
+                    <span class="text-gray-500 block text-[10px] uppercase font-bold">Current Status</span>
+                    <span class="text-emerald-600 font-extrabold text-sm flex items-center gap-1.5 mt-0.5" id="modalStatus">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> In Transit
+                    </span>
+                </div>
+                <div class="bg-brandBg p-3.5 rounded-xl border border-gray-200/60">
+                    <span class="text-gray-500 block text-[10px] uppercase font-bold">Est. Delivery</span>
+                    <span class="text-brandMaersk font-bold text-sm mt-0.5 block" id="modalEta">Today, 06:30 PM</span>
+                </div>
+            </div>
+
+            <!-- Origin -> Destination Route Line -->
+            <div class="bg-sky-50/50 rounded-xl p-4 mb-6 border border-sky-100">
+                <div class="flex justify-between items-center text-xs font-bold text-brandMaersk mb-2">
+                    <span id="modalOrigin"><i class="fa-solid fa-warehouse text-brandAccent mr-1"></i> Delhi NCR Freight Hub</span>
+                    <i class="fa-solid fa-arrow-right-long text-brandAccent"></i>
+                    <span id="modalDestination"><i class="fa-solid fa-location-crosshairs text-emerald-600 mr-1"></i> Mumbai Port Gateway</span>
+                </div>
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div class="bg-brandAccent h-full rounded-full w-3/4 transition-all duration-1000"></div>
+                </div>
+            </div>
+
+            <!-- Live Tracking Timeline -->
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Shipment Progress</h4>
+            <div class="space-y-4 text-xs relative pl-4 border-l-2 border-sky-200 mb-6">
+                <div class="relative">
+                    <span class="absolute -left-[21px] top-0 w-2.5 h-2.5 rounded-full bg-brandAccent ring-4 ring-sky-100"></span>
+                    <p class="font-bold text-brandMaersk">Passed RFID Toll Gate #4 (Jaipur Corridor)</p>
+                    <p class="text-[10px] text-gray-400">10 mins ago • Sensor Temp: 4.2°C</p>
+                </div>
+                <div class="relative">
+                    <span class="absolute -left-[21px] top-0 w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+                    <p class="font-bold text-gray-700">Dispatched from NCR Logistics Hub</p>
+                    <p class="text-[10px] text-gray-400">08:00 AM • Verified Driver #9021</p>
+                </div>
+            </div>
+
+            <!-- Modal Footer CTA -->
+            <button onclick="closeTrackingModal()" class="w-full py-3 bg-brandMaersk text-white text-xs font-bold rounded-xl hover:bg-brandDark transition shadow-md">
+                Close Tracking Details
+            </button>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // Mobile Navbar Drawer Toggle
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIcon = document.getElementById('menuIcon');
+
+        if (menuBtn && mobileMenu && menuIcon) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                menuIcon.classList.toggle('fa-bars');
+                menuIcon.classList.toggle('fa-xmark');
+            });
+        }
+
+        // Tracking Console Tab Switcher
+        function switchTrackTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panelTrack').classList.add('hidden');
+            document.getElementById('panelSchedule').classList.add('hidden');
+            document.getElementById('panelWorkforce').classList.add('hidden');
+
+            if(tab === 'track') {
+                document.getElementById('tabTrackBtn').classList.add('active');
+                document.getElementById('panelTrack').classList.remove('hidden');
+            } else if(tab === 'schedule') {
+                document.getElementById('tabScheduleBtn').classList.add('active');
+                document.getElementById('panelSchedule').classList.remove('hidden');
+            } else if(tab === 'workforce') {
+                document.getElementById('tabWorkforceBtn').classList.add('active');
+                document.getElementById('panelWorkforce').classList.remove('hidden');
+            }
+        }
+
+        async function handleTrackSearch() {
+            const inputField = document.getElementById('trackInput');
+            const trackingId = inputField ? inputField.value.trim() : '';
+
+            if (!trackingId) {
+                alert('Please enter a Tracking ID or Phone Number');
+                return;
+            }
+
+            const trackBtn = document.getElementById('trackSubmitBtn');
+            const originalText = trackBtn ? trackBtn.innerHTML : 'TRACK';
+            if (trackBtn) trackBtn.innerHTML = '⚡ SEARCHING...';
+
+            try {
+                const response = await fetch('/api/v1/track/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tracking_id: trackingId })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const data = result.data;
+                    
+                    const modalTrackingId = document.getElementById('modalTrackingId');
+                    if (modalTrackingId) {
+                        modalTrackingId.innerText = `Consignment #${data.tracking_id}`;
+                        document.getElementById('modalStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${data.status}`;
+                        document.getElementById('modalEta').innerText = data.eta;
+                        document.getElementById('modalOrigin').innerHTML = `<i class="fa-solid fa-warehouse text-brandAccent mr-1"></i> ${data.origin}`;
+                        document.getElementById('modalDestination').innerHTML = `<i class="fa-solid fa-location-crosshairs text-emerald-600 mr-1"></i> ${data.destination}`;
+
+                        const modal = document.getElementById('trackingModal');
+                        const modalCard = document.getElementById('modalCard');
+                        if (modal) {
+                            modal.classList.remove('hidden');
+                            setTimeout(() => {
+                                if (modalCard) modalCard.classList.remove('scale-95');
+                            }, 10);
+                        }
+                    } else {
+                        alert(`✅ Tracking Info:\n\nID: ${data.tracking_id}\nStatus: ${data.status}\nETA: ${data.eta}\nOrigin: ${data.origin}\nDestination: ${data.destination}`);
+                    }
+                } else {
+                    alert(result.message || 'Tracking failed!');
+                }
+            } catch (error) {
+                console.error('Track API Error:', error);
+                alert('Server connection failed! Please ensure Node.js server is running.');
+            } finally {
+                if (trackBtn) trackBtn.innerHTML = originalText;
+            }
+        }
+
+        function closeTrackingModal() {
+            const modal = document.getElementById('trackingModal');
+            const modalCard = document.getElementById('modalCard');
+            
+            if (modalCard) modalCard.classList.add('scale-95');
+            setTimeout(() => {
+                if (modal) modal.classList.add('hidden');
+            }, 150);
+        }
+
+        // Capabilities Tab Switcher
+        function showCapability(cap) {
+            document.querySelectorAll('.cap-tab').forEach(t => {
+                t.classList.remove('active');
+                t.classList.add('border-gray-300/80', 'text-gray-700');
+            });
+            ['intermodal', 'fn', 'pgease', 'api'].forEach(c => {
+                const el = document.getElementById('capContent-' + c);
+                if (el) el.classList.add('hidden');
+            });
+
+            const activeTab = document.getElementById('capTab-' + cap);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.classList.remove('border-gray-300/80', 'text-gray-700');
+            }
+            const content = document.getElementById('capContent-' + cap);
+            if (content) content.classList.remove('hidden');
+        }
+
+        // Three.js 3D Interactive Globe
+        (function initHero3DGlobe() {
+            const container = document.getElementById('hero-globe-3d');
+            if(!container) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Outer Globe
+            const globeGeo = new THREE.IcosahedronGeometry(3.2, 3);
+            const globeMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true, transparent: true, opacity: 0.35 });
+            const globe = new THREE.Mesh(globeGeo, globeMat);
+            scene.add(globe);
+
+            // Orbit Ring
+            const ringGeo = new THREE.RingGeometry(4.2, 4.3, 64);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 2.5;
+            scene.add(ring);
+
+            camera.position.z = 6.8;
+
+            let mouseX = 0, mouseY = 0;
+            function onPointerMove(e) {
+                const x = e.clientX || (e.touches && e.touches[0].clientX);
+                const y = e.clientY || (e.touches && e.touches[0].clientY);
+                if(x && y) {
+                    mouseX = (x - window.innerWidth / 2) * 0.0008;
+                    mouseY = (y - window.innerHeight / 2) * 0.0008;
+                }
+            }
+            window.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('touchmove', onPointerMove);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                globe.rotation.y += 0.003 + mouseX * 0.05;
+                globe.rotation.x += 0.001 + mouseY * 0.05;
+                ring.rotation.z -= 0.002;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        })();
+
+        // Event Listener for Modal Overlay Click to Close
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('trackingModal');
+            if(modal) {
+                modal.addEventListener('click', (e) => {
+                    if(e.target === modal) closeTrackingModal();
+                });
+            }
+        });
+
+        // Schedules Search Functionality
+        async function handleScheduleSearch() {
+            const origin = document.getElementById('schedOrigin')?.value.trim();
+            const destination = document.getElementById('schedDestination')?.value.trim();
+
+            if (!origin || !destination) {
+                alert('Please enter both Origin and Destination Hubs.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/schedules/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ origin, destination })
+                });
+                const result = await response.json();
+                alert(`Route: ${origin} ➔ ${destination}\nAvailable Corridors: ${result.count || 2} active fleets.`);
+            } catch (err) {
+                alert(`Searching corridors for ${origin} to ${destination}... (Connected)`);
+            }
+        }
+
+        // Workforce Direct Route
+        function handleWorkforceSelect() {
+            const roleSelect = document.getElementById('workforceRoleSelect');
+            const selectedRole = roleSelect ? roleSelect.value : '';
+            alert(`Redirecting to FN Portal with pre-selected role: ${selectedRole}`);
+            window.open('https://fnlogistics.example.com', '_blank');
+        }
+    </script>
+</body>
+</html>
