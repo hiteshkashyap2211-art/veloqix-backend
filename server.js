@@ -49,7 +49,7 @@ const ContactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', ContactSchema);
 
-// 🔑 MongoDB Admin OTP Authentication Schema & Model (New Feature)
+// 🔑 MongoDB Admin OTP Authentication Schema & Model
 const AdminAuthSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   hashed_otp: { type: String, required: true },
@@ -122,10 +122,8 @@ const verifyAdminKey = (req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 
-// 🚀 ADMIN OTP AUTHENTICATION ENDPOINTS (NEW)
-
-// 1️⃣ Generate & Send OTP to hiteshkashyap2211@gmail.com
-app.post('/api/v1/admin/generate-otp', async (req, res) => {
+// 🚀 ADMIN OTP AUTHENTICATION HELPER FUNCTION
+const handleSendOtp = async (req, res) => {
   const { email } = req.body;
   console.log(`📥 OTP requested for admin: ${email}`);
 
@@ -190,7 +188,11 @@ app.post('/api/v1/admin/generate-otp', async (req, res) => {
       message: `OTP Generated: Check terminal console if email failed. (${otp})`
     });
   }
-});
+};
+
+// 1️⃣ Generate & Send OTP Endpoints (Dono route add hain compatibility ke liye)
+app.post('/api/v1/admin/generate-otp', handleSendOtp);
+app.post('/api/v1/admin/send-otp', handleSendOtp);
 
 // 2️⃣ Verify OTP & Login
 app.post('/api/v1/admin/login-otp', async (req, res) => {
@@ -296,7 +298,7 @@ app.get('/api/v1/admin/inquiries', verifyAdminKey, async (req, res) => {
   }
 });
 
-// 🗑️ Delete inquiry by ID (Secured Endpoint - NEW)
+// 🗑️ Delete inquiry by ID (Secured Endpoint)
 app.delete('/api/v1/admin/inquiries/:id', verifyAdminKey, async (req, res) => {
   const { id } = req.params;
   try {
