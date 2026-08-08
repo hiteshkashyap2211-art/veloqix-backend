@@ -148,7 +148,7 @@ const handleSendOtp = async (req, res) => {
         { hashed_otp },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
-      console.log(`💾 OTP saved in DB for ${targetAdminEmail}: [${otp}]`);
+      console.log(`💾 Secure OTP generated & saved in DB for ${targetAdminEmail}`);
     }
   } catch (dbErr) {
     console.error('⚠️ Could not save OTP to DB:', dbErr.message);
@@ -183,9 +183,9 @@ const handleSendOtp = async (req, res) => {
     });
   } catch (mailErr) {
     console.error('📧 Email delivery error:', mailErr.message);
-    return res.status(200).json({
-      success: true,
-      message: `OTP Generated: Check terminal console if email failed. (${otp})`
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to send OTP email. Please try again later.'
     });
   }
 };
