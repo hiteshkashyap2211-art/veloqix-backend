@@ -116,6 +116,9 @@
     </footer>
 
     <script>
+        // Live Render Backend Base URL
+        const API_BASE_URL = "https://veloqix-backend.onrender.com";
+
         const getOtpBtn = document.getElementById('getOtpBtn');
         const loginBtn = document.getElementById('loginBtn');
         const otpField = document.getElementById('otpField');
@@ -133,7 +136,8 @@
             getOtpBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Sending OTP...</span>`;
 
             try {
-                const res = await fetch('/api/v1/admin/generate-otp', {
+                // FIXED: Direct connection to Render backend API
+                const res = await fetch(`${API_BASE_URL}/api/v1/admin/generate-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
@@ -169,7 +173,8 @@
             }
 
             try {
-                const res = await fetch('/api/v1/admin/login-otp', {
+                // FIXED: Direct connection to Render backend API
+                const res = await fetch(`${API_BASE_URL}/api/v1/admin/login-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, otp })
@@ -178,7 +183,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // FIX: Save both keys so admin.html accepts login
+                    // Save credentials for dashboard access
                     localStorage.setItem('adminToken', data.token);
                     localStorage.setItem('adminSecret', 'veloqix_secure_admin_123'); 
 
