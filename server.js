@@ -387,8 +387,8 @@ app.get('/driver.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'driver.html'));
 });
 
-// Catch-all route to serve admin-login.html for frontend requests (Fixed Node v24 Syntax)
-app.get('(.*)', (req, res) => {
+// Catch-all route to serve admin-login.html for frontend requests (Fixed Node v24 RegExp Syntax)
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
 });
 
