@@ -412,3 +412,13 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`🚀 Veloqix Gateway & WebSockets running on port ${PORT}`);
 });
+
+// Har route ke liye public folder se admin-login.html serve karega
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
+// Server Listen Command (Ye pehle se hai aapke code me)
+server.listen(PORT, () => {
+  console.log(`🚀 Veloqix Gateway & WebSockets running on port ${PORT}`);
+});
