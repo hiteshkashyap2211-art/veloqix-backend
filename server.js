@@ -61,21 +61,12 @@ const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 // 🔒 In-Memory Fallback Store (In case MongoDB is disconnected/sleeping)
 const memoryOtpStore = new Map();
 
-// 📧 High-Reliability Cloud Transporter (Port 587 TLS + Connection Pooling)
+// 📧 Direct Gmail SSL Transporter (Fixes Render Port Blockage)
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // TLS
-  pool: true,
-  maxConnections: 3,
-  maxMessages: 100,
-  connectionTimeout: 10000,
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER || 'hiteshkashyap2211@gmail.com',
     pass: process.env.EMAIL_PASS || 'zjdeumtoqyntdiln'
-  },
-  tls: {
-    rejectUnauthorized: false
   }
 });
 
