@@ -58,14 +58,24 @@ const AdminAuthSchema = new mongoose.Schema({
 
 const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 
-// 📧 High-Reliability Secure Nodemailer Transporter Setup (SSL Port 465)
+// 🔒 In-Memory Fallback Store (In case MongoDB is disconnected/sleeping)
+const memoryOtpStore = new Map();
+
+// 📧 High-Reliability Cloud Transporter (Port 587 TLS + Connection Pooling)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // TLS
+  pool: true,
+  maxConnections: 3,
+  maxMessages: 100,
+  connectionTimeout: 10000,
   auth: {
     user: process.env.EMAIL_USER || 'hiteshkashyap2211@gmail.com',
     pass: process.env.EMAIL_PASS || 'zjdeumtoqyntdiln'
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
@@ -140,7 +150,13 @@ const handleSendOtp = async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const hashed_otp = bcrypt.hashSync(otp, 10);
 
-  // Save OTP to MongoDB
+  // Always store in In-Memory Map as Primary/Fallback
+  memoryOtpStore.set(targetAdminEmail.toLowerCase(), {
+    hashed_otp,
+    expiresAt: Date.now() + 5 * 60 * 1000
+  });
+
+  // Save OTP to MongoDB if DB is connected
   try {
     if (mongoose.connection.readyState === 1) {
       await AdminAuth.findOneAndUpdate(
@@ -151,7 +167,7 @@ const handleSendOtp = async (req, res) => {
       console.log(`💾 Secure OTP generated & saved in DB for ${targetAdminEmail}`);
     }
   } catch (dbErr) {
-    console.error('⚠️ Could not save OTP to DB:', dbErr.message);
+    console.error('⚠️ Could not save OTP to DB (using memory store):', dbErr.message);
   }
 
   // Send Email using Nodemailer
@@ -210,30 +226,45 @@ app.post('/api/v1/admin/login-otp', async (req, res) => {
   }
 
   try {
+    let isValid = false;
+
+    // Check DB first if connected
     if (mongoose.connection.readyState === 1) {
       const record = await AdminAuth.findOne({ email: targetAdminEmail });
-
-      if (!record) {
-        return res.status(400).json({ success: false, message: 'OTP expired or not found. Please click Get Admin OTP again.' });
-      }
-
-      const isValid = bcrypt.compareSync(otp, record.hashed_otp);
-
-      if (isValid) {
-        await AdminAuth.deleteOne({ email: targetAdminEmail }); // Cleanup used OTP
-        const token = jwt.sign({ email: targetAdminEmail, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
-
-        return res.status(200).json({
-          success: true,
-          message: 'Authentication successful!',
-          token: token
-        });
-      } else {
-        return res.status(400).json({ success: false, message: 'Invalid OTP entered. Please try again.' });
+      if (record) {
+        isValid = bcrypt.compareSync(otp, record.hashed_otp);
+        if (isValid) {
+          await AdminAuth.deleteOne({ email: targetAdminEmail });
+        }
       }
     }
+
+    // Fallback to In-Memory Store if DB wasn't checked or didn't match
+    if (!isValid && memoryOtpStore.has(targetAdminEmail.toLowerCase())) {
+      const memRecord = memoryOtpStore.get(targetAdminEmail.toLowerCase());
+      if (Date.now() <= memRecord.expiresAt) {
+        isValid = bcrypt.compareSync(otp, memRecord.hashed_otp);
+        if (isValid) {
+          memoryOtpStore.delete(targetAdminEmail.toLowerCase());
+        }
+      } else {
+        memoryOtpStore.delete(targetAdminEmail.toLowerCase());
+      }
+    }
+
+    if (isValid) {
+      const token = jwt.sign({ email: targetAdminEmail, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Authentication successful!',
+        token: token
+      });
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP entered. Please try again.' });
+    }
   } catch (err) {
-    return res.status(500).json({ success: false, message: 'Database error during verification.' });
+    return res.status(500).json({ success: false, message: 'Server error during verification.' });
   }
 });
 
