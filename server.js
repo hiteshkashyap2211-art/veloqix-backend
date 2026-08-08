@@ -190,7 +190,7 @@ const handleSendOtp = async (req, res) => {
   }
 };
 
-// 1️⃣ Generate & Send OTP Endpoints (Dono route add hain compatibility ke liye)
+// 1️⃣ Generate & Send OTP Endpoints
 app.post('/api/v1/admin/generate-otp', handleSendOtp);
 app.post('/api/v1/admin/send-otp', handleSendOtp);
 
@@ -250,7 +250,6 @@ app.post('/api/v1/contact', async (req, res) => {
     });
   }
 
-  // 1️⃣ Database mein Save karein
   try {
     if (mongoose.connection.readyState === 1) {
       const newInquiry = new Contact({ name, email, phone, company, message });
@@ -261,7 +260,6 @@ app.post('/api/v1/contact', async (req, res) => {
     console.error('⚠️ Could not save inquiry to DB:', dbErr.message);
   }
 
-  // 2️⃣ Background mein email bhejega
   try {
     const mailOptions = {
       from: email,
@@ -281,7 +279,7 @@ app.post('/api/v1/contact', async (req, res) => {
   });
 });
 
-// 📥 Get all contact inquiries (Secured Endpoint)
+// 📥 Get all contact inquiries
 app.get('/api/v1/admin/inquiries', verifyAdminKey, async (req, res) => {
   try {
     if (mongoose.connection.readyState !== 1) {
@@ -298,7 +296,7 @@ app.get('/api/v1/admin/inquiries', verifyAdminKey, async (req, res) => {
   }
 });
 
-// 🗑️ Delete inquiry by ID (Secured Endpoint)
+// 🗑️ Delete inquiry by ID
 app.delete('/api/v1/admin/inquiries/:id', verifyAdminKey, async (req, res) => {
   const { id } = req.params;
   try {
@@ -327,7 +325,7 @@ app.delete('/api/v1/admin/inquiries/:id', verifyAdminKey, async (req, res) => {
   }
 });
 
-// 🚀 Tracking API Endpoint (Safe MongoDB Timeout + Fallback)
+// 🚀 Tracking API Endpoint
 app.post('/api/v1/track/', async (req, res) => {
   const { tracking_id } = req.body;
 
@@ -353,7 +351,6 @@ app.post('/api/v1/track/', async (req, res) => {
     console.warn('⚠️ DB query skipped, serving fallback response');
   }
 
-  // Fallback response agar DB na ho
   return res.status(200).json({
     success: true,
     data: {
@@ -390,6 +387,11 @@ app.get('/driver.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'driver.html'));
 });
 
+// Catch-all route to serve admin-login.html for frontend requests (Fixed Node v24 Syntax)
+app.get('(.*)', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
 // Socket.io Real-time Connection Listener
 io.on('connection', (socket) => {
   console.log(`🔌 New Telemetry Monitor Connected: ${socket.id}`);
@@ -408,17 +410,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Server Listen Command
-server.listen(PORT, () => {
-  console.log(`🚀 Veloqix Gateway & WebSockets running on port ${PORT}`);
-});
-
-// Har route ke liye public folder se admin-login.html serve karega
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
-});
-
-// Server Listen Command (Ye pehle se hai aapke code me)
+// Server Listen Command (Single Execution)
 server.listen(PORT, () => {
   console.log(`🚀 Veloqix Gateway & WebSockets running on port ${PORT}`);
 });
