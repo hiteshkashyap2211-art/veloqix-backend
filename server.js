@@ -4,9 +4,9 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const mongoose = require('mongoose');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Resend } = require('resend');
 require('dotenv').config();
 
 const authRoutes = require('./src/routes/authRoutes');
@@ -56,35 +56,11 @@ const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 // 🔒 In-Memory Fallback Store
 const memoryOtpStore = new Map();
 
-// 📧 High-Reliability Mail Transporter (Render Production Guarded)
+// 📧 High-Reliability Resend HTTP API Client Setup
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 const SENDER_EMAIL = process.env.EMAIL_USER || 'hiteshkashyap2211@gmail.com';
-const SENDER_PASS = process.env.EMAIL_PASS || 'zjdeumtoqyntdiln';
 const TARGET_ADMIN = process.env.ADMIN_EMAIL || 'hiteshkashyap2211@gmail.com';
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // TLS encrypted port 465 (Bypasses Render ISP Port 587 Filters)
-  auth: {
-    user: SENDER_EMAIL,
-    pass: SENDER_PASS
-  },
-  dnsTimeout: 10000,
-  connectionTimeout: 15000,
-  socketTimeout: 15000,
-  tls: {
-    rejectUnauthorized: false
-  }
-});
-
-// Verify SMTP Connection on Application Startup
-transporter.verify((error) => {
-  if (error) {
-    console.error('❌ Mail Transporter Connection Error:', error.message);
-  } else {
-    console.log('📧 Mail Server Ready to Send Messages');
-  }
-});
 
 // HTTP Server & Socket.IO Setup
 const server = http.createServer(app);
@@ -168,33 +144,32 @@ const handleSendOtp = async (req, res) => {
     console.error('⚠️ DB OTP Storage Skipped:', dbErr.message);
   }
 
-  // Always log to Render Console
+  // Always log to Terminal / Server Console
   console.log(`\n========================================`);
   console.log(`🔑 ADMIN LOGIN OTP CODE: [ ${otp} ]`);
   console.log(`========================================\n`);
 
-  const mailOptions = {
-    from: `"Veloqix Security Portal" <${SENDER_EMAIL}>`,
-    to: TARGET_ADMIN,
-    subject: `🔑 Admin Passcode: ${otp}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #1e293b; border-radius: 10px; padding: 20px; background-color: #0f172a; color: #f8fafc;">
-        <h2 style="color: #38bdf8; text-align: center;">VELOQIX LOGISTICS</h2>
-        <p style="text-align: center; color: #94a3b8; font-size: 12px;">Admin Authentication Passcode</p>
-        <hr style="border-color: #334155;">
-        <p>Your one-time login code is:</p>
-        <div style="background-color: #1e293b; border: 1px solid #0284c7; padding: 15px; text-align: center; border-radius: 8px; margin: 15px 0;">
-          <span style="font-size: 30px; font-weight: bold; letter-spacing: 5px; color: #38bdf8; font-family: monospace;">${otp}</span>
-        </div>
-        <p style="color: #94a3b8; font-size: 11px;">Valid for 5 minutes. Do not share this code.</p>
-      </div>
-    `
-  };
-
-  // Dispatch Email
+  // Dispatch Email via Resend HTTP API
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ OTP Email Delivered: ${info.messageId}`);
+    const data = await resend.emails.send({
+      from: 'Veloqix Security Portal <onboarding@resend.dev>',
+      to: TARGET_ADMIN,
+      subject: `🔑 Admin Passcode: ${otp}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #1e293b; border-radius: 10px; padding: 20px; background-color: #0f172a; color: #f8fafc;">
+          <h2 style="color: #38bdf8; text-align: center;">VELOQIX LOGISTICS</h2>
+          <p style="text-align: center; color: #94a3b8; font-size: 12px;">Admin Authentication Passcode</p>
+          <hr style="border-color: #334155;">
+          <p>Your one-time login code is:</p>
+          <div style="background-color: #1e293b; border: 1px solid #0284c7; padding: 15px; text-align: center; border-radius: 8px; margin: 15px 0;">
+            <span style="font-size: 30px; font-weight: bold; letter-spacing: 5px; color: #38bdf8; font-family: monospace;">${otp}</span>
+          </div>
+          <p style="color: #94a3b8; font-size: 11px;">Valid for 5 minutes. Do not share this code.</p>
+        </div>
+      `
+    });
+
+    console.log(`✅ OTP Email Delivered via Resend API`);
     return res.status(200).json({
       success: true,
       message: `OTP sent successfully to ${TARGET_ADMIN}`
@@ -278,13 +253,14 @@ app.post('/api/v1/contact', async (req, res) => {
   }
 
   try {
-    await transporter.sendMail({
-      from: `"${name}" <${SENDER_EMAIL}>`,
+    await resend.emails.send({
+      from: 'Veloqix Contact Form <onboarding@resend.dev>',
       to: TARGET_ADMIN,
       replyTo: email,
       subject: `New Inquiry from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nCompany: ${company}\nMessage: ${message}`
     });
+    console.log(`✅ Contact inquiry email sent for ${name}`);
   } catch (error) {
     console.error('⚠️ Contact Mail Error:', error.message);
   }
