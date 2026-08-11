@@ -56,21 +56,28 @@ const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 // 🔒 In-Memory Fallback Store
 const memoryOtpStore = new Map();
 
-// 📧 High-Reliability Mail Transporter (Render IPv4 + Gmail Direct)
+// 📧 High-Reliability Mail Transporter (Render Production Guarded)
 const SENDER_EMAIL = process.env.EMAIL_USER || 'hiteshkashyap2211@gmail.com';
 const SENDER_PASS = process.env.EMAIL_PASS || 'zjdeumtoqyntdiln';
 const TARGET_ADMIN = process.env.ADMIN_EMAIL || 'hiteshkashyap2211@gmail.com';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  family: 4, // Forces IPv4 to bypass Render IPv6 ENETUNREACH issues
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // TLS encrypted port 465 (Bypasses Render ISP Port 587 Filters)
   auth: {
     user: SENDER_EMAIL,
     pass: SENDER_PASS
+  },
+  dnsTimeout: 10000,
+  connectionTimeout: 15000,
+  socketTimeout: 15000,
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
-// Verify SMTP connection on startup
+// Verify SMTP Connection on Application Startup
 transporter.verify((error) => {
   if (error) {
     console.error('❌ Mail Transporter Connection Error:', error.message);
@@ -194,7 +201,6 @@ const handleSendOtp = async (req, res) => {
     });
   } catch (err) {
     console.error('❌ Mail Delivery Failed:', err.message);
-    // Return success to UI so flow isn't broken, but inform about console fallback
     return res.status(200).json({
       success: true,
       message: 'OTP generated! Check email or terminal logs.'
