@@ -17,13 +17,25 @@ const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'veloqix_super_secure_b2b_otp_key_2026!';
 
 // 🍃 Safe Non-Blocking MongoDB Connection Setup
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/veloqix_db';
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/veloqix_db';
 
 mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
   .then(() => console.log('🍃 MongoDB Database Connected Successfully'))
   .catch((err) => console.warn('⚠️ MongoDB Connection Warning:', err.message));
 
 // MongoDB Schemas & Models
+const VehicleTelemetrySchema = new mongoose.Schema({
+  vehicle_id: { type: String, required: true },
+  location: {
+    type: { type: String, default: 'Point' },
+    coordinates: [Number] // [longitude, latitude]
+  },
+  speed_kmh: { type: Number, default: 0 },
+  temperature_celsius: { type: Number, default: 0 },
+  timestamp: { type: Date, default: Date.now }
+});
+const VehicleTelemetry = mongoose.model('VehicleTelemetry', VehicleTelemetrySchema);
+
 const ShipmentSchema = new mongoose.Schema({
   tracking_id: { type: String, required: true, unique: true },
   status: { type: String, default: 'In Transit' },
@@ -372,7 +384,7 @@ app.get('/contact.html', (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/driver.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'driver.html')));
 
 // Wildcard Fallback (Handled safely for API routes vs HTML pages)
-app.get(/(.*)/, (req, res) => {
+app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ success: false, message: 'API Endpoint Not Found' });
   }
@@ -417,4 +429,8 @@ io.on('connection', (socket) => {
       console.error('Telemetry Save Error:', err.message);
     }
   });
+});
+
+server.listen(PORT, () => {
+  console.log(`🚀 Gateway Running on Port ${PORT}`);
 });
