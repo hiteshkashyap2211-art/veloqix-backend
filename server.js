@@ -372,7 +372,7 @@ app.get('/contact.html', (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/driver.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'driver.html')));
 
 // Wildcard Fallback (Handled safely for API routes vs HTML pages)
-app.get('*', (req, res) => {
+app.get(/(.*)/, (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ success: false, message: 'API Endpoint Not Found' });
   }
