@@ -353,48 +353,57 @@
     </section>
 
     <!-- 6. FEATURE COMPARISON TABLE SECTION -->
-    <section id="feature-comparison" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 mb-12 sm:mb-20">
-        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+    <section id="feature-comparison" class="w-full max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12 mb-12 sm:mb-20 overflow-hidden">
+        <div class="text-center max-w-2xl mx-auto mb-6 sm:mb-12">
             <span class="text-brandAccent uppercase font-extrabold text-[10px] sm:text-xs tracking-widest block mb-2 bg-sky-50 px-3 py-1 rounded-full w-fit mx-auto border border-sky-100">Platform Matrix</span>
-            <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk tracking-tight">Ecosystem Feature Comparison</h2>
+            <h2 class="text-xl sm:text-4xl font-black text-brandMaersk tracking-tight">Ecosystem Feature Comparison</h2>
             <p class="text-gray-600 text-xs sm:text-sm mt-1 sm:mt-2 font-normal">Compare capabilities across FN Logistic Hub & MyPGEase</p>
         </div>
 
-        <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-200/80 shadow-xl overflow-hidden">
-            <div class="overflow-x-auto no-scrollbar">
-                <table class="w-full text-left border-collapse min-w-[550px]">
+        <div class="bg-white rounded-xl sm:rounded-3xl border border-gray-200/80 shadow-xl overflow-hidden w-full">
+            <!-- Responsive Wrapper with Smooth Touch Scroll -->
+            <div class="w-full overflow-x-auto min-w-full touch-pan-x no-scrollbar">
+                <table class="w-full text-left border-collapse min-w-[600px] sm:min-w-full">
                     <thead>
-                        <tr class="bg-brandMaersk text-white text-[11px] sm:text-xs uppercase tracking-wider border-b border-gray-800">
-                            <th class="py-4 sm:py-5 px-4 sm:px-6 font-extrabold">Feature / Capability</th>
-                            <th class="py-4 sm:py-5 px-4 sm:px-6 font-extrabold text-brandAccent">FN Logistic Hub</th>
-                            <th class="py-4 sm:py-5 px-4 sm:px-6 font-extrabold text-brandAccent">MyPGEase</th>
+                        <tr class="bg-brandMaersk text-white text-[10px] sm:text-xs uppercase tracking-wider border-b border-gray-800">
+                            <th class="py-3.5 sm:py-5 px-3 sm:px-6 font-extrabold w-1/3">Feature / Capability</th>
+                            <th class="py-3.5 sm:py-5 px-3 sm:px-6 font-extrabold text-brandAccent w-1/3">FN Logistic Hub</th>
+                            <th class="py-3.5 sm:py-5 px-3 sm:px-6 font-extrabold text-brandAccent w-1/3">MyPGEase</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 text-xs sm:text-sm text-gray-700 font-medium">
+                    <tbody class="divide-y divide-gray-100 text-[11px] sm:text-sm text-gray-700 font-medium">
                         <tr class="hover:bg-sky-50/50 transition">
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6 font-bold text-brandMaersk">Primary Industry</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6">Logistics & Supply Chain</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6">PropTech & Real Estate</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold text-brandMaersk">Primary Industry</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6">Logistics & Supply Chain</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6">PropTech & Real Estate</td>
                         </tr>
                         <tr class="hover:bg-sky-50/50 transition">
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6 font-bold text-brandMaersk">User Verification (KYC)</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5 text-xs sm:text-sm"></i> Heavy Driver License & Aadhar</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5 text-xs sm:text-sm"></i> Tenant Identity & Police Record</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold text-brandMaersk">User Verification (KYC)</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> Heavy Driver License & Aadhar</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> Tenant Identity & Police Record</td>
                         </tr>
                         <tr class="hover:bg-sky-50/50 transition">
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6 font-bold text-brandMaersk">Automated Billing & Receipts</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5 text-xs sm:text-sm"></i> Shift & Consignment Invoicing</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5 text-xs sm:text-sm"></i> Instant WhatsApp Rent Receipts</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold text-brandMaersk">Automated Billing & Receipts</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> Shift & Consignment Invoicing</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> Instant WhatsApp Rent Receipts</td>
                         </tr>
                         <tr class="hover:bg-sky-50/50 transition">
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6 font-bold text-brandMaersk">Workforce / Tenant Dispatch</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5 text-xs sm:text-sm"></i> On-Demand Driver Allocation</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><i class="fa-solid fa-minus text-gray-300"></i> N/A (Room Allotment)</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold text-brandMaersk">Workforce / Tenant Dispatch</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> On-Demand Driver Allocation</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6"><i class="fa-solid fa-minus text-gray-300"></i> N/A (Room Allotment)</td>
                         </tr>
                         <tr class="hover:bg-sky-50/50 transition">
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6 font-bold text-brandMaersk">Live Production Server</td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="text-brandAccent font-bold hover:underline flex items-center gap-1">fn-logistic-hub.onrender.com <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a></td>
-                            <td class="py-3.5 sm:py-4 px-4 sm:px-6"><a href="https://pgease.pythonanywhere.com" target="_blank" class="text-brandAccent font-bold hover:underline flex items-center gap-1">pgease.pythonanywhere.com <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a></td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold text-brandMaersk">Live Production Server</td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6">
+                                <a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="text-brandAccent font-bold hover:underline inline-flex items-center gap-1 break-all">
+                                    fn-logistic-hub.onrender.com <i class="fa-solid fa-arrow-up-right-from-square text-[9px] shrink-0"></i>
+                                </a>
+                            </td>
+                            <td class="py-3 sm:py-4 px-3 sm:px-6">
+                                <a href="https://pgease.pythonanywhere.com" target="_blank" class="text-brandAccent font-bold hover:underline inline-flex items-center gap-1 break-all">
+                                    pgease.pythonanywhere.com <i class="fa-solid fa-arrow-up-right-from-square text-[9px] shrink-0"></i>
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
