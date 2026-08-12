@@ -379,8 +379,42 @@ app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
 });
 
+// server.js - Socket connection inside upgrade
 io.on('connection', (socket) => {
-  socket.on('telemetry', (data) => io.emit('telemetry_update', data));
-});
+  console.log('⚡ Client Connected:', socket.id);
 
-server.listen(PORT, () => console.log(`🚀 Gateway Running on Port ${PORT}`));
+  // Join vehicle-specific room (optional for multi-fleet)
+  socket.on('join_vehicle_room', (vehicleId) => {
+    socket.join(`vehicle_${vehicleId}`);
+  });
+
+  // Handle incoming driver telemetry
+  socket.on('telemetry', async (data) => {
+    // 1. Broadcast to all clients / dashboard
+    io.emit('telemetry_update', data);
+
+    // 2. Broadcast to specific room (if applicable)
+    if (data.vehicle_id) {
+      io.to(`vehicle_${data.vehicle_id}`).emit('telemetry_update', data);
+    }
+
+    // 3. Save to MongoDB (History / Polyline route plotting)
+    try {
+      if (mongoose.connection.readyState === 1) {
+        // Vehicle Telemetry Model example
+        await VehicleTelemetry.create({
+          vehicle_id: data.vehicle_id,
+          location: {
+            type: 'Point',
+            coordinates: [data.longitude, data.latitude]
+          },
+          speed_kmh: data.speed_kmh,
+          temperature_celsius: data.temperature_celsius,
+          timestamp: data.timestamp || new Date()
+        });
+      }
+    } catch (err) {
+      console.error('Telemetry Save Error:', err.message);
+    }
+  });
+});

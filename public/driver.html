@@ -7,7 +7,7 @@
 
   <!-- Tailwind CSS & Google Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Socket.IO Client Library -->
   <script src="/socket.io/socket.io.js"></script>
@@ -15,21 +15,33 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #070c1e; color: #f1f5f9; }
     .mono { font-family: 'JetBrains Mono', monospace; }
-    .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { 
+      background: rgba(15, 23, 42, 0.85); 
+      backdrop-filter: blur(16px); 
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+    .glass-card:hover {
+      border-color: rgba(59, 130, 246, 0.25);
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto">
+<body class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto selection:bg-blue-500 selection:text-white">
 
   <!-- Header -->
-  <header class="flex justify-between items-center py-2 border-b border-slate-800 mb-4">
-    <div class="flex items-center gap-2">
-      <div class="bg-blue-600 p-2 rounded-lg text-white font-bold text-sm">⚡</div>
+  <header class="flex justify-between items-center py-2.5 border-b border-slate-800/80 mb-4">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl text-white font-bold text-sm shadow-lg shadow-blue-500/20">⚡</div>
       <div>
-        <h1 class="text-base font-bold tracking-tight text-white">VELOQIX DRIVER PRO</h1>
+        <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
+          VELOQIX DRIVER PRO
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold">v2.0</span>
+        </h1>
         <p class="text-[10px] text-slate-400">Mobile Telemetry Terminal (Responsive)</p>
       </div>
     </div>
-    <span id="socketBadge" class="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium flex items-center gap-1.5">
+    <span id="socketBadge" class="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium flex items-center gap-1.5 shadow-sm">
       <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Connecting
     </span>
   </header>
@@ -38,16 +50,18 @@
   <main class="space-y-4 flex-1">
 
     <!-- Vehicle Link -->
-    <div class="glass-card p-4 rounded-2xl space-y-3">
-      <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider">🚛 Vehicle Link & Mode</h2>
-      <div class="grid grid-cols-2 gap-2">
+    <div class="glass-card p-4 rounded-2xl space-y-3 transition-all duration-300">
+      <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+        <span>🚛</span> Vehicle Link & Mode
+      </h2>
+      <div class="grid grid-cols-2 gap-2.5">
         <div>
-          <label class="text-[10px] text-slate-400 block mb-1">Vehicle ID</label>
-          <input type="text" id="vehId" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs mono focus:outline-none focus:border-blue-500">
+          <label for="vehId" class="text-[10px] text-slate-400 block mb-1 font-medium">Vehicle ID</label>
+          <input type="text" id="vehId" value="1" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs mono text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
         </div>
         <div>
-          <label class="text-[10px] text-slate-400 block mb-1">Stream Mode</label>
-          <select id="streamMode" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-xs focus:outline-none focus:border-blue-500">
+          <label for="streamMode" class="text-[10px] text-slate-400 block mb-1 font-medium">Stream Mode</label>
+          <select id="streamMode" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
             <option value="websocket">WebSocket Live (Fast)</option>
             <option value="http">HTTP REST API</option>
           </select>
@@ -56,45 +70,50 @@
     </div>
 
     <!-- Live Telemetry Readout -->
-    <div class="glass-card p-5 rounded-2xl space-y-4 text-center">
-      <div class="inline-flex items-center justify-center p-3 rounded-full bg-blue-500/10 text-blue-400 mb-1">
+    <div class="glass-card p-5 rounded-2xl space-y-4 text-center transition-all duration-300">
+      <div class="inline-flex items-center justify-center p-3 rounded-2xl bg-blue-500/10 text-blue-400 mb-1 border border-blue-500/20 shadow-inner">
         <span class="text-2xl animate-pulse">📡</span>
       </div>
 
       <div>
         <span class="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold">Current Speed</span>
-        <div class="text-4xl font-extrabold text-white mono mt-1" id="speedDisplay">0 <span class="text-sm font-normal text-slate-400">km/h</span></div>
+        <div class="text-4xl font-extrabold text-white mono mt-1 tracking-tight" id="speedDisplay">0 <span class="text-sm font-normal text-slate-400">km/h</span></div>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
-        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-          <span class="text-[10px] text-slate-500 block">Latitude</span>
-          <span class="text-xs font-semibold mono text-blue-400" id="latDisplay">--.----</span>
+      <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800/80">
+        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+          <span class="text-[10px] text-slate-500 block font-medium">Latitude</span>
+          <span class="text-xs font-bold mono text-blue-400" id="latDisplay">--.----</span>
         </div>
-        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-          <span class="text-[10px] text-slate-500 block">Longitude</span>
-          <span class="text-xs font-semibold mono text-blue-400" id="lngDisplay">--.----</span>
+        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+          <span class="text-[10px] text-slate-500 block font-medium">Longitude</span>
+          <span class="text-xs font-bold mono text-blue-400" id="lngDisplay">--.----</span>
         </div>
       </div>
 
-      <div class="text-[11px] text-slate-400" id="gpsAccuracy">GPS Status: Ready</div>
+      <div class="text-[11px] text-slate-400 font-medium bg-slate-950/40 py-1.5 px-3 rounded-lg inline-block border border-slate-800/60" id="gpsAccuracy">
+        GPS Status: Ready
+      </div>
     </div>
 
     <!-- Action Buttons -->
-    <div class="space-y-2">
-      <button id="toggleBtn" onclick="toggleTracking()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+    <div class="space-y-2.5">
+      <button id="toggleBtn" onclick="toggleTracking()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm transition-all duration-200 shadow-lg shadow-emerald-600/20 active:scale-[0.98] flex items-center justify-center gap-2">
         <span>▶️ Start Live GPS Hardware Stream</span>
       </button>
 
-      <button onclick="sendSinglePulse()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-xs transition border border-slate-700 flex items-center justify-center gap-2">
+      <button onclick="sendSinglePulse()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-xl text-xs transition-all duration-200 border border-slate-700/80 hover:border-slate-600 active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
         <span>📡 Force Instant GPS Pulse</span>
       </button>
     </div>
 
     <!-- Event Logs -->
-    <div class="glass-card p-3 rounded-2xl">
-      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Terminal Activity Log</span>
-      <pre id="log" class="text-[10px] mono text-slate-400 bg-slate-950 p-2 rounded-xl h-28 overflow-y-auto whitespace-pre-wrap border border-slate-800">System Initialized...</pre>
+    <div class="glass-card p-3.5 rounded-2xl">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Terminal Activity Log</span>
+        <span class="text-[9px] text-slate-500 mono">Auto-scroll</span>
+      </div>
+      <pre id="log" class="text-[10px] mono text-slate-300 bg-slate-950/90 p-2.5 rounded-xl h-28 overflow-y-auto whitespace-pre-wrap border border-slate-800/80 leading-relaxed">System Initialized...</pre>
     </div>
 
   </main>
@@ -104,20 +123,22 @@
     let isTracking = false;
     let retryCount = 0;
     const MAX_RETRIES = 3;
+    
+    // Initialize Socket.IO connection
     const socket = io("https://affected-facsimile-skied.ngrok-free.dev", {
       transports: ['websocket', 'polling']
     });
 
     socket.on('connect', () => {
       const badge = document.getElementById('socketBadge');
-      badge.className = "text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium flex items-center gap-1.5";
+      badge.className = "text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium flex items-center gap-1.5 shadow-sm";
       badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live`;
       addLog("Connected to Veloqix Command Center Socket.");
     });
 
     socket.on('disconnect', () => {
       const badge = document.getElementById('socketBadge');
-      badge.className = "text-[10px] px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium flex items-center gap-1.5";
+      badge.className = "text-[10px] px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium flex items-center gap-1.5 shadow-sm";
       badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-400"></span> Disconnected`;
       addLog("Socket connection closed.");
     });
@@ -143,7 +164,7 @@
       }
 
       const btn = document.getElementById('toggleBtn');
-      btn.className = "w-full py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-sm transition shadow-lg shadow-rose-600/20 animate-pulse flex items-center justify-center gap-2";
+      btn.className = "w-full py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-sm transition-all duration-200 shadow-lg shadow-rose-600/20 animate-pulse flex items-center justify-center gap-2 active:scale-[0.98]";
       btn.innerHTML = `<span>⏹ Stop Tracking</span>`;
 
       isTracking = true;
@@ -155,7 +176,6 @@
           retryCount = 0; 
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          // Badlav yahan karein:
           const speed = position.coords.speed && position.coords.speed > 0 
             ? Math.round(position.coords.speed * 3.6) 
             : 0;
@@ -200,7 +220,7 @@
 
       isTracking = false;
       const btn = document.getElementById('toggleBtn');
-      btn.className = "w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2";
+      btn.className = "w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm transition-all duration-200 shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 active:scale-[0.98]";
       btn.innerHTML = `<span>▶️ Start Live GPS Hardware Stream</span>`;
 
       addLog("Tracking stopped.");

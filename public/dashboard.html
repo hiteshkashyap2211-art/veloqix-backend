@@ -7,7 +7,7 @@
   
   <!-- Tailwind CSS & Google Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Leaflet OpenStreetMap CSS/JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -23,38 +23,46 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #070c1e; color: #f1f5f9; }
     .mono { font-family: 'JetBrains Mono', monospace; }
     #map { height: 100%; min-height: 520px; border-radius: 16px; z-index: 1; }
-    .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { 
+      background: rgba(15, 23, 42, 0.75); 
+      backdrop-filter: blur(16px); 
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+      transition: border-color 0.3s ease, transform 0.2s ease;
+    }
     .glass-card:hover { border-color: rgba(59, 130, 246, 0.3); }
-    .leaflet-control-layers { background: rgba(15, 23, 42, 0.95) !important; color: #fff !important; border-radius: 12px !important; border: 1px solid #334155 !important; }
+    .leaflet-control-layers { background: rgba(15, 23, 42, 0.95) !important; color: #fff !important; border-radius: 12px !important; border: 1px solid #334155 !important; backdrop-filter: blur(8px); }
     .leaflet-control-layers-base label { color: #cbd5e1 !important; font-size: 12px; font-weight: 500; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0b1329; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
 
   <!-- 🏢 Enterprise Top Navbar -->
-  <header class="bg-slate-900/90 border-b border-slate-800 px-6 py-3.5 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
+  <header class="bg-slate-900/90 border-b border-slate-800/80 px-6 py-3.5 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
     <div class="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex items-center gap-4">
         <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-lg shadow-blue-500/20 text-white font-bold text-lg">⚡</div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">VELOQIX</h1>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">ENTERPRISE OS</span>
+            <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">VELOQIX</h1>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">ENTERPRISE OS</span>
           </div>
           <p class="text-xs text-slate-400">Autonomous Logistics Gateway & Fleet Telemetry System</p>
         </div>
       </div>
 
       <!-- Quick KPI Counters -->
-      <div class="hidden lg:flex items-center gap-6 bg-slate-950/60 px-5 py-2 rounded-xl border border-slate-800/80">
-        <div class="text-center border-r border-slate-800 pr-5">
+      <div class="hidden lg:flex items-center gap-6 bg-slate-950/60 px-5 py-2 rounded-xl border border-slate-800/80 shadow-inner">
+        <div class="text-center border-r border-slate-800/80 pr-5">
           <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Active Fleet</span>
           <span class="text-sm font-bold text-emerald-400 mono">1 Units</span>
         </div>
-        <div class="text-center border-r border-slate-800 pr-5">
+        <div class="text-center border-r border-slate-800/80 pr-5">
           <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Gateway Latency</span>
           <span class="text-sm font-bold text-blue-400 mono">&lt; 12ms</span>
         </div>
@@ -66,10 +74,10 @@
 
       <!-- Network Badges -->
       <div class="flex items-center gap-3">
-        <span id="socketStatusBadge" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+        <span id="socketStatusBadge" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm">
           <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping mr-2"></span> Connecting...
         </span>
-        <span id="authStatusBadge" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-medium">Session Inactive</span>
+        <span id="authStatusBadge" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-medium shadow-sm">Session Inactive</span>
       </div>
     </div>
   </header>
@@ -81,60 +89,60 @@
     <div class="lg:col-span-4 space-y-5 flex flex-col">
       
       <!-- 1. Authentication Card -->
-      <div class="glass-card p-5 rounded-2xl shadow-xl">
+      <div class="glass-card p-5 rounded-2xl">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-xs font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">🔐 Auth & Session</h2>
-          <span class="text-[10px] text-slate-500">JWT Gateway</span>
+          <span class="text-[10px] text-slate-500 font-medium">JWT Gateway</span>
         </div>
         <div class="space-y-2.5">
           <div class="grid grid-cols-2 gap-2">
-            <input type="email" id="loginEmail" placeholder="admin@veloqix.com" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 transition">
-            <input type="password" id="loginPassword" placeholder="••••••••" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 transition">
+            <input type="email" id="loginEmail" placeholder="admin@veloqix.com" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+            <input type="password" id="loginPassword" placeholder="••••••••" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
           </div>
-          <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-blue-600/20">Authenticate Portal</button>
+          <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-blue-600/20">Authenticate Portal</button>
         </div>
       </div>
 
       <!-- 2. Unit Registration Card -->
-      <div class="glass-card p-5 rounded-2xl shadow-xl">
+      <div class="glass-card p-5 rounded-2xl">
         <h2 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">🚚 Unit Provisioning</h2>
         <div class="space-y-2.5">
           <div class="grid grid-cols-2 gap-2">
-            <input type="text" id="vehNumber" placeholder="HR-26-AB-1234" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-            <input type="text" id="devId" placeholder="IOT-SER-9082" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+            <input type="text" id="vehNumber" placeholder="HR-26-AB-1234" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+            <input type="text" id="devId" placeholder="IOT-SER-9082" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
           </div>
-          <select id="vehType" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-300">
+          <select id="vehType" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-300 transition">
             <option value="INTERMODAL_CONTAINER">Intermodal Container</option>
             <option value="COLD_STORAGE">Cold Storage Truck</option>
             <option value="HAULAGE_TRAILER">Haulage Trailer</option>
           </select>
-          <button onclick="addVehicle()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">Register Fleet Unit</button>
+          <button onclick="addVehicle()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-indigo-600/20">Register Fleet Unit</button>
         </div>
       </div>
 
       <!-- 3. Real-Time Telemetry Control Panel -->
-      <div class="glass-card p-5 rounded-2xl shadow-xl flex-1 flex flex-col justify-between">
+      <div class="glass-card p-5 rounded-2xl flex-1 flex flex-col justify-between">
         <div>
           <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">📡 Live Telemetry Stream</h2>
           <div class="space-y-3">
             <div>
-              <label class="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block">Active Vehicle ID / UUID</label>
-              <input type="text" id="teleVehId" value="1" placeholder="Vehicle ID" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs mono focus:outline-none focus:border-emerald-500">
+              <label for="teleVehId" class="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block font-medium">Active Vehicle ID / UUID</label>
+              <input type="text" id="teleVehId" value="1" placeholder="Vehicle ID" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs mono text-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
             </div>
             
             <div>
-              <label class="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block">Coordinates & Speed</label>
+              <label class="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block font-medium">Coordinates & Speed</label>
               <div class="grid grid-cols-3 gap-2">
-                <input type="number" step="any" id="lat" value="28.4595" placeholder="Lat" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono">
-                <input type="number" step="any" id="lng" value="77.0266" placeholder="Lng" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono">
-                <input type="number" id="speed" value="65" placeholder="km/h" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono">
+                <input type="number" step="any" id="lat" value="28.4595" placeholder="Lat" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+                <input type="number" step="any" id="lng" value="77.0266" placeholder="Lng" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+                <input type="number" id="speed" value="65" placeholder="km/h" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-center mono text-slate-200 focus:outline-none focus:border-emerald-500 transition">
               </div>
             </div>
 
             <!-- Geofence Monitor Card -->
-            <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex justify-between items-center">
+            <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80 flex justify-between items-center shadow-inner">
               <div>
-                <span class="block text-[10px] text-slate-400 font-semibold uppercase">Geofence Compliance</span>
+                <span class="block text-[10px] text-slate-400 font-semibold uppercase">Geofence Monitor</span>
                 <span class="text-[11px] text-slate-500">Gurugram Yard Zone (3KM Radius)</span>
               </div>
               <span id="geofenceStatus" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">INSIDE ZONE 🟢</span>
@@ -144,12 +152,12 @@
 
         <div class="space-y-2 mt-4">
           <div class="grid grid-cols-2 gap-2">
-            <button onclick="sendTelemetry()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-emerald-600/20">Send Pulse</button>
-            <button id="simBtn" onclick="toggleSimulator()" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-amber-600/20">Start Simulation</button>
+            <button onclick="sendTelemetry()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-emerald-600/20">Send Pulse</button>
+            <button id="simBtn" onclick="toggleSimulator()" class="bg-amber-600 hover:bg-amber-500 active:scale-[0.98] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-amber-600/20">Start Simulation</button>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <button onclick="clearRouteHistory()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition border border-slate-700">🧹 Clear Route</button>
-            <button onclick="downloadCSVReport()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-sky-600/20">📥 Export CSV</button>
+            <button onclick="clearRouteHistory()" class="bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-slate-300 font-semibold py-2 rounded-xl text-xs transition-all duration-200 border border-slate-700/80">🧹 Clear Route</button>
+            <button onclick="downloadCSVReport()" class="bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-sky-600/20">📥 Export CSV</button>
           </div>
         </div>
       </div>
@@ -160,37 +168,41 @@
     <div class="lg:col-span-8 space-y-5 flex flex-col">
       
       <!-- Interactive Real-Time Map View -->
-      <div class="glass-card p-4 rounded-2xl shadow-xl flex-1 flex flex-col min-h-[480px]">
+      <div class="glass-card p-4 rounded-2xl flex-1 flex flex-col min-h-[480px]">
         <div class="flex justify-between items-center mb-3 px-1">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
             <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Live Fleet Telemetry Map</h2>
           </div>
           <div class="flex items-center gap-3">
-            <span class="text-xs text-slate-400 mono bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800" id="coordsDisplay">28.4595, 77.0266</span>
+            <span class="text-xs text-slate-400 mono bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800/80" id="coordsDisplay">28.4595, 77.0266</span>
           </div>
         </div>
-        <div id="map" class="w-full flex-1"></div>
+        <div id="map" class="w-full flex-1 shadow-inner"></div>
       </div>
 
       <!-- Live Diagnostics Graph & Event Log Grid -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
         
         <!-- Live Graph (7 cols) -->
-        <div class="md:col-span-7 glass-card p-4 rounded-2xl shadow-xl">
-          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">📈 Speed & Temperature Telemetry</h2>
+        <div class="md:col-span-7 glass-card p-4 rounded-2xl">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span>📈</span> Speed & Temperature Telemetry
+          </h2>
           <div class="h-36">
             <canvas id="telemetryChart"></canvas>
           </div>
         </div>
 
         <!-- Activity Audit Stream (5 cols) -->
-        <div class="md:col-span-5 glass-card p-4 rounded-2xl shadow-xl flex flex-col">
+        <div class="md:col-span-5 glass-card p-4 rounded-2xl flex flex-col">
           <div class="flex justify-between items-center mb-2">
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">⚡ Audit Stream</h2>
-            <span class="text-[10px] text-slate-500">Real-Time WebSocket</span>
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⚡</span> Audit Stream
+            </h2>
+            <span class="text-[10px] text-slate-500 font-medium">Real-Time WebSocket</span>
           </div>
-          <pre id="outputLog" class="bg-slate-950/90 p-3 rounded-xl text-[11px] text-sky-400 mono overflow-y-auto flex-1 h-36 border border-slate-800/80 whitespace-pre-wrap leading-relaxed">System online. Awaiting telemetry pulses...</pre>
+          <pre id="outputLog" class="bg-slate-950/90 p-3 rounded-xl text-[11px] text-sky-400 mono overflow-y-auto flex-1 h-36 border border-slate-800/80 whitespace-pre-wrap leading-relaxed shadow-inner">System online. Awaiting telemetry pulses...</pre>
         </div>
 
       </div>
@@ -213,7 +225,7 @@
     socket.on('connect', () => {
       console.log('⚡ Connected to Gateway:', socket.id);
       const badge = document.getElementById('socketStatusBadge');
-      badge.className = "inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+      badge.className = "inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm";
       badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-2"></span> WebSocket Online`;
 
       if(tenantId) {
@@ -221,7 +233,7 @@
       }
     });
 
-    // ⚡ FIXED: Universal Telemetry Listeners for Both Global & Tenant Streams
+    // Universal Telemetry Listeners for Both Global & Tenant Streams
     socket.on('telemetry', (data) => {
       updateUIWithTelemetry(data);
     });
@@ -232,7 +244,7 @@
 
     socket.on('disconnect', () => {
       const badge = document.getElementById('socketStatusBadge');
-      badge.className = "inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20";
+      badge.className = "inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-sm";
       badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-400 mr-2"></span> Socket Offline`;
     });
 
@@ -313,7 +325,7 @@
 
     if(jwtToken) {
       document.getElementById('authStatusBadge').innerText = "Session Active";
-      document.getElementById('authStatusBadge').className = "text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium";
+      document.getElementById('authStatusBadge').className = "text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium shadow-sm";
     }
 
     function logResponse(data) {
@@ -436,24 +448,28 @@
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
 
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if(data.token) {
-        jwtToken = data.token;
-        tenantId = data.user ? data.user.tenant_id : '';
-        localStorage.setItem('token', jwtToken);
-        if(tenantId) {
-          localStorage.setItem('tenantId', tenantId);
-          subscribeToTenantSocket(tenantId);
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if(data.token) {
+          jwtToken = data.token;
+          tenantId = data.user ? data.user.tenant_id : '';
+          localStorage.setItem('token', jwtToken);
+          if(tenantId) {
+            localStorage.setItem('tenantId', tenantId);
+            subscribeToTenantSocket(tenantId);
+          }
+          document.getElementById('authStatusBadge').innerText = "Session Active";
+          document.getElementById('authStatusBadge').className = "text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium shadow-sm";
         }
-        document.getElementById('authStatusBadge').innerText = "Session Active";
-        document.getElementById('authStatusBadge').className = "text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium";
+        logResponse(data);
+      } catch (err) {
+        logResponse({ error: err.message });
       }
-      logResponse(data);
     }
 
     async function addVehicle() {
@@ -461,19 +477,23 @@
       const telemetry_device_id = document.getElementById('devId').value;
       const type = document.getElementById('vehType').value;
 
-      const res = await fetch('/api/vehicles/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}`
-        },
-        body: JSON.stringify({ vehicle_number, telemetry_device_id, type })
-      });
-      const data = await res.json();
-      if(data.vehicle && data.vehicle.id) {
-        document.getElementById('teleVehId').value = data.vehicle.id;
+      try {
+        const res = await fetch('/api/vehicles/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify({ vehicle_number, telemetry_device_id, type })
+        });
+        const data = await res.json();
+        if(data.vehicle && data.vehicle.id) {
+          document.getElementById('teleVehId').value = data.vehicle.id;
+        }
+        logResponse(data);
+      } catch (err) {
+        logResponse({ error: err.message });
       }
-      logResponse(data);
     }
 
     async function sendTelemetry() {
@@ -485,16 +505,20 @@
 
       updateUIWithTelemetry({ latitude, longitude, speed_kmh, temperature_celsius: temp });
 
-      const res = await fetch('/api/vehicles/telemetry', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}`
-        },
-        body: JSON.stringify({ vehicle_id, latitude, longitude, speed_kmh, temperature_celsius: temp })
-      });
-      const data = await res.json();
-      logResponse(data);
+      try {
+        const res = await fetch('/api/vehicles/telemetry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify({ vehicle_id, latitude, longitude, speed_kmh, temperature_celsius: temp })
+        });
+        const data = await res.json();
+        logResponse(data);
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     function toggleSimulator() {
@@ -503,10 +527,10 @@
         clearInterval(simInterval);
         simInterval = null;
         btn.innerText = "Start Simulation";
-        btn.className = "bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-amber-600/20";
+        btn.className = "bg-amber-600 hover:bg-amber-500 active:scale-[0.98] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-amber-600/20";
       } else {
         btn.innerText = "Stop Simulation 🛑";
-        btn.className = "bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-rose-600/20 animate-pulse";
+        btn.className = "bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white font-semibold py-2 rounded-xl text-xs transition-all duration-200 shadow-md shadow-rose-600/20 animate-pulse";
         simInterval = setInterval(() => {
           let currentLat = parseFloat(document.getElementById('lat').value);
           let currentLng = parseFloat(document.getElementById('lng').value);
