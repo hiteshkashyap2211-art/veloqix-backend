@@ -53,8 +53,9 @@ const AdminAuthSchema = new mongoose.Schema({
 });
 const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 
-// 🔒 In-Memory Fallback Store
+// 🔒 In-Memory Fallback Stores
 const memoryOtpStore = new Map();
+const memoryInquiriesStore = []; // Added In-Memory Storage for Contact Inquiries
 
 // 📧 High-Reliability Resend HTTP API Client Setup
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -235,7 +236,7 @@ app.post('/api/v1/admin/login-otp', async (req, res) => {
   }
 });
 
-// Contact Endpoint
+// Contact Endpoint (Upgraded with In-Memory Storage & Real-time Socket Event)
 app.post('/api/v1/contact', async (req, res) => {
   const { name, email, phone, company, message } = req.body;
 
@@ -243,15 +244,36 @@ app.post('/api/v1/contact', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing required fields.' });
   }
 
+  const inquiryPayload = {
+    _id: Date.now().toString(),
+    name,
+    email,
+    phone: phone || '',
+    company: company || '',
+    message,
+    createdAt: new Date()
+  };
+
+  // Always store in In-Memory Store
+  memoryInquiriesStore.unshift(inquiryPayload);
+
+  // Save to DB if connection is active
   try {
     if (mongoose.connection.readyState === 1) {
       const newInquiry = new Contact({ name, email, phone, company, message });
-      await newInquiry.save();
+      const savedDoc = await newInquiry.save();
+      inquiryPayload._id = savedDoc._id; // Sync DB ID
     }
   } catch (dbErr) {
     console.error('⚠️ Inquiry DB Save Error:', dbErr.message);
   }
 
+  // Emit real-time socket event for Admin dashboard
+  if (req.io) {
+    req.io.emit('new_inquiry', inquiryPayload);
+  }
+
+  // Send Email notification via Resend
   try {
     await resend.emails.send({
       from: 'Veloqix Contact Form <onboarding@resend.dev>',
@@ -268,22 +290,42 @@ app.post('/api/v1/contact', async (req, res) => {
   return res.status(200).json({ success: true, message: 'Inquiry submitted successfully.' });
 });
 
-// Admin Inquiries API
+// Admin Inquiries API (Upgraded to fallback to Memory Storage when DB is disconnected)
 app.get('/api/v1/admin/inquiries', verifyAdminKey, async (req, res) => {
   try {
-    if (mongoose.connection.readyState !== 1) return res.status(503).json({ success: false, message: 'DB Disconnected' });
-    const inquiries = await Contact.find().sort({ createdAt: -1 });
+    let inquiries = [];
+
+    if (mongoose.connection.readyState === 1) {
+      inquiries = await Contact.find().sort({ createdAt: -1 });
+    } else {
+      // Return memory store if database is offline/disconnected
+      inquiries = memoryInquiriesStore;
+    }
+
     return res.status(200).json({ success: true, count: inquiries.length, data: inquiries });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    // If DB query fails, fallback safely to memory store
+    return res.status(200).json({ success: true, count: memoryInquiriesStore.length, data: memoryInquiriesStore });
   }
 });
 
+// Delete Inquiry API (Upgraded to handle both DB and In-Memory deletion)
 app.delete('/api/v1/admin/inquiries/:id', verifyAdminKey, async (req, res) => {
+  const { id } = req.params;
+
   try {
-    if (mongoose.connection.readyState !== 1) return res.status(503).json({ success: false, message: 'DB Disconnected' });
-    await Contact.findByIdAndDelete(req.params.id);
-    return res.status(200).json({ success: true, message: 'Deleted' });
+    // Delete from memory array
+    const memoryIndex = memoryInquiriesStore.findIndex(item => item._id.toString() === id);
+    if (memoryIndex !== -1) {
+      memoryInquiriesStore.splice(memoryIndex, 1);
+    }
+
+    // Delete from DB if connected
+    if (mongoose.connection.readyState === 1) {
+      await Contact.findByIdAndDelete(id);
+    }
+
+    return res.status(200).json({ success: true, message: 'Deleted successfully' });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
