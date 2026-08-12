@@ -60,7 +60,7 @@
       <div class="hidden lg:flex items-center gap-6 bg-slate-950/60 px-5 py-2 rounded-xl border border-slate-800/80 shadow-inner">
         <div class="text-center border-r border-slate-800/80 pr-5">
           <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Active Fleet</span>
-          <span class="text-sm font-bold text-emerald-400 mono">1 Units</span>
+          <span id="kpiActiveFleet" class="text-sm font-bold text-emerald-400 mono">1 Units</span>
         </div>
         <div class="text-center border-r border-slate-800/80 pr-5">
           <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Gateway Latency</span>
@@ -219,7 +219,7 @@
     let routeCoordinates = []; 
     let telemetryHistoryLog = [];
 
-    // ⚡ 1. Initialize Socket.IO Client
+    // ⚡ 1. Initialize Socket.IO Client (Auto-connects to current relative server host)
     const socket = io();
 
     socket.on('connect', () => {
@@ -233,14 +233,16 @@
       }
     });
 
-    // Universal Telemetry Listeners for Both Global & Tenant Streams
-    socket.on('telemetry', (data) => {
-      updateUIWithTelemetry(data);
-    });
+    // Catch-all Multi-Event Realtime Telemetry Listeners for Mobile Driver App & Simulator
+    const handleTelemetryEvent = (data) => {
+      if (data) {
+        updateUIWithTelemetry(data);
+      }
+    };
 
-    socket.on('telemetry_update', (data) => {
-      updateUIWithTelemetry(data);
-    });
+    socket.on('telemetry', handleTelemetryEvent);
+    socket.on('telemetry_update', handleTelemetryEvent);
+    socket.on('location_update', handleTelemetryEvent);
 
     socket.on('disconnect', () => {
       const badge = document.getElementById('socketStatusBadge');
@@ -367,20 +369,25 @@
     }
 
     function updateUIWithTelemetry(data) {
-      const latitude = parseFloat(data.latitude);
-      const longitude = parseFloat(data.longitude);
-      const speed = parseFloat(data.speed_kmh);
-      const temp = parseFloat(data.temperature_celsius || 22.0);
+      const latitude = parseFloat(data.latitude || data.lat);
+      const longitude = parseFloat(data.longitude || data.lng);
+      const speed = parseFloat(data.speed_kmh !== undefined ? data.speed_kmh : (data.speed || 0));
+      const temp = parseFloat(data.temperature_celsius || data.temp || 22.0);
+      const vehicleId = data.vehicle_id || data.id || document.getElementById('teleVehId').value || 1;
       const timestamp = new Date(data.timestamp || data.created_at || Date.now()).toLocaleString();
 
-      // Auto-update input boxes so manual fields sync with live mobile telemetry
+      if (isNaN(latitude) || isNaN(longitude)) return;
+
+      // Realtime UI updates for input boxes
+      document.getElementById('teleVehId').value = vehicleId;
       document.getElementById('lat').value = latitude;
       document.getElementById('lng').value = longitude;
       document.getElementById('speed').value = speed;
+      document.getElementById('kpiActiveFleet').innerText = `${vehicleId} Unit Active`;
 
       telemetryHistoryLog.push({
         timestamp,
-        vehicle_id: data.vehicle_id || 1,
+        vehicle_id: vehicleId,
         latitude,
         longitude,
         speed_kmh: speed,
@@ -388,20 +395,22 @@
         geofence_status: isInsideGeofence ? 'INSIDE' : 'OUTSIDE'
       });
 
+      // Update Map Marker and Animated Breadcrumbs
       routeCoordinates.push([latitude, longitude]);
       routePolyline.setLatLngs(routeCoordinates);
 
       checkGeofence(latitude, longitude);
 
       vehicleMarker.setLatLng([latitude, longitude]);
-      vehicleMarker.getPopup().setContent(`<b>Unit ID: ${data.vehicle_id || 1}</b><br>Speed: ${speed} km/h<br>Temp: ${temp}°C`);
+      vehicleMarker.getPopup().setContent(`<b>Unit ID: ${vehicleId}</b><br>Speed: ${speed} km/h<br>Temp: ${temp}°C`);
       
-      // Responsive Map Pan & Center Update
-      map.setView([latitude, longitude], map.getZoom(), { animate: true });
+      // Dynamic Map Pan
+      map.panTo([latitude, longitude], { animate: true });
       document.getElementById('coordsDisplay').innerText = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
 
+      // Live Chart Update
       const timeStr = new Date(data.timestamp || data.created_at || Date.now()).toLocaleTimeString();
-      if (telemetryChart.data.labels.length > 8) {
+      if (telemetryChart.data.labels.length > 10) {
         telemetryChart.data.labels.shift();
         telemetryChart.data.datasets[0].data.shift();
         telemetryChart.data.datasets[1].data.shift();
@@ -413,7 +422,7 @@
 
       // Log activity stream
       const logBox = document.getElementById('outputLog');
-      logBox.innerText = `📡 Live Packet: [Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}, Spd: ${speed}km/h]\n` + logBox.innerText;
+      logBox.innerText = `📡 Live Packet [Unit ${vehicleId}]: Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}, Spd: ${speed} km/h\n` + logBox.innerText;
     }
 
     function downloadCSVReport() {
@@ -503,7 +512,11 @@
       const speed_kmh = parseFloat(document.getElementById('speed').value);
       const temp = (Math.random() * 5 + 20).toFixed(1);
 
-      updateUIWithTelemetry({ latitude, longitude, speed_kmh, temperature_celsius: temp });
+      const payload = { vehicle_id, latitude, longitude, speed_kmh, temperature_celsius: temp, timestamp: new Date().toISOString() };
+
+      // Broadcast to local socket & UI
+      socket.emit('telemetry', payload);
+      updateUIWithTelemetry(payload);
 
       try {
         const res = await fetch('/api/vehicles/telemetry', {
@@ -512,7 +525,7 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwtToken}`
           },
-          body: JSON.stringify({ vehicle_id, latitude, longitude, speed_kmh, temperature_celsius: temp })
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
         logResponse(data);
@@ -535,19 +548,17 @@
           let currentLat = parseFloat(document.getElementById('lat').value);
           let currentLng = parseFloat(document.getElementById('lng').value);
           
-          document.getElementById('lat').value = (currentLat + 0.0015).toFixed(4);
-          document.getElementById('lng').value = (currentLng + 0.0012).toFixed(4);
-          document.getElementById('speed').value = Math.floor(Math.random() * 30 + 50);
+          document.getElementById('lat').value = (currentLat + 0.0008).toFixed(4);
+          document.getElementById('lng').value = (currentLng + 0.0006).toFixed(4);
+          document.getElementById('speed').value = Math.floor(Math.random() * 30 + 45);
 
           sendTelemetry();
-        }, 3000);
+        }, 2500);
       }
     }
 
     function subscribeToTenantSocket(tId) {
-      socket.on(`telemetry_update_${tId}`, (data) => {
-        updateUIWithTelemetry(data);
-      });
+      socket.on(`telemetry_update_${tId}`, handleTelemetryEvent);
 
       socket.on(`alert_${tId}`, (alert) => {
         const logBox = document.getElementById('outputLog');
