@@ -55,7 +55,7 @@ const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 
 // 🔒 In-Memory Fallback Stores
 const memoryOtpStore = new Map();
-const memoryInquiriesStore = []; // Added In-Memory Storage for Contact Inquiries
+const memoryInquiriesStore = []; // In-Memory Storage for Contact Inquiries
 
 // 📧 High-Reliability Resend HTTP API Client Setup
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -73,6 +73,8 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static frontend files cleanly from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
@@ -362,8 +364,20 @@ app.post('/api/v1/track/', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'ACTIVE' }));
+
+// Dedicated Static Page Routes (Fixed file routing without deleting anything)
+app.get('/admin-login.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-login.html')));
+app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/contact.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'contact.html')));
 app.get('/driver.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'driver.html')));
-app.get(/.*/, (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-login.html')));
+
+// Wildcard Fallback (Handled safely for API routes vs HTML pages)
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ success: false, message: 'API Endpoint Not Found' });
+  }
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
 
 io.on('connection', (socket) => {
   socket.on('telemetry', (data) => io.emit('telemetry_update', data));
