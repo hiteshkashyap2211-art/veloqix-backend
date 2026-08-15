@@ -34,21 +34,38 @@
 
     <!-- Organization Schema Markup for Google Knowledge / AI Overview -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Veloqix Technologies",
-      "url": "https://veloqix-technologies.onrender.com/",
-      "logo": "https://veloqix-technologies.onrender.com/logo.svg",
-      "founder": {
-        "@type": "Person",
-        "name": "Hitesh Kashyap"
-      },
-      "description": "Veloqix Technologies provides enterprise-grade logistics software, fleet management systems, and supply chain tracking solutions.",
-      "sameAs": [
-        "https://www.linkedin.com/company/veloqix"
-      ]
-    }
+        
+        {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+            "@type": "Organization",
+            "@id": "https://veloqix-technologies.onrender.com/#organization",
+            "name": "Veloqix Technologies",
+            "url": "https://veloqix-technologies.onrender.com/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://veloqix-technologies.onrender.com/logo.svg"
+            },
+            "founder": {
+                "@type": "Person",
+                "name": "Hitesh Kashyap",
+                "sameAs": [
+                "https://www.linkedin.com/in/hitesh-kashyap-682150402/"
+                ]
+            }
+            },
+            {
+            "@type": "WebSite",
+            "@id": "https://veloqix-technologies.onrender.com/#website",
+            "url": "https://veloqix-technologies.onrender.com/",
+            "name": "Veloqix Technologies",
+            "publisher": {
+                "@id": "https://veloqix-technologies.onrender.com/#organization"
+            }
+            }
+        ]
+        }
     </script>
     
     <!-- Tailwind CSS CDN (Preserved) -->
