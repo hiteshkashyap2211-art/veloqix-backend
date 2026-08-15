@@ -16,12 +16,20 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'veloqix_super_secure_b2b_otp_key_2026!';
 
-// 🍃 Safe Non-Blocking MongoDB Connection Setup
+// 🍃 Robust Non-Blocking & Reconnecting MongoDB Connection Setup
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/veloqix_db';
 
-mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
+mongoose.connect(MONGO_URI, { 
+  serverSelectionTimeoutMS: 10000,
+  socketTimeoutMS: 45000 
+})
   .then(() => console.log('🍃 MongoDB Database Connected Successfully'))
-  .catch((err) => console.warn('⚠️ MongoDB Connection Warning:', err.message));
+  .catch((err) => console.error('⚠️ MongoDB Connection Warning:', err.message));
+
+// Connection Status Monitor
+mongoose.connection.on('disconnected', () => {
+  console.warn('⚠️ MongoDB Disconnected! Waiting for connection recovery...');
+});
 
 // MongoDB Schemas & Models
 const VehicleTelemetrySchema = new mongoose.Schema({
@@ -67,7 +75,7 @@ const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 
 // 🔒 In-Memory Fallback Stores
 const memoryOtpStore = new Map();
-const memoryInquiriesStore = []; // In-Memory Storage for Contact Inquiries
+const memoryInquiriesStore = []; // In-Memory Storage Fallback
 
 // 📧 High-Reliability Resend HTTP API Client Setup
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -250,7 +258,7 @@ app.post('/api/v1/admin/login-otp', async (req, res) => {
   }
 });
 
-// Contact Endpoint (Upgraded with In-Memory Storage & Real-time Socket Event)
+// Contact Endpoint (Upgraded to ensure MongoDB persistence with In-Memory fallback)
 app.post('/api/v1/contact', async (req, res) => {
   const { name, email, phone, company, message } = req.body;
 
@@ -268,21 +276,22 @@ app.post('/api/v1/contact', async (req, res) => {
     createdAt: new Date()
   };
 
-  // Always store in In-Memory Store
-  memoryInquiriesStore.unshift(inquiryPayload);
-
-  // Save to DB if connection is active
   try {
+    // Save directly to MongoDB if active
     if (mongoose.connection.readyState === 1) {
       const newInquiry = new Contact({ name, email, phone, company, message });
       const savedDoc = await newInquiry.save();
-      inquiryPayload._id = savedDoc._id; // Sync DB ID
+      inquiryPayload._id = savedDoc._id; // Sync Database generated ID
+    } else {
+      // Memory Store fallback if DB connection drop
+      memoryInquiriesStore.unshift(inquiryPayload);
     }
   } catch (dbErr) {
     console.error('⚠️ Inquiry DB Save Error:', dbErr.message);
+    memoryInquiriesStore.unshift(inquiryPayload);
   }
 
-  // Emit real-time socket event for Admin dashboard
+  // Real-time socket event broadcast
   if (req.io) {
     req.io.emit('new_inquiry', inquiryPayload);
   }
@@ -304,7 +313,7 @@ app.post('/api/v1/contact', async (req, res) => {
   return res.status(200).json({ success: true, message: 'Inquiry submitted successfully.' });
 });
 
-// Admin Inquiries API (Upgraded to fallback to Memory Storage when DB is disconnected)
+// Admin Inquiries API (Fetches MongoDB data first, safely falls back to memory)
 app.get('/api/v1/admin/inquiries', verifyAdminKey, async (req, res) => {
   try {
     let inquiries = [];
@@ -312,29 +321,27 @@ app.get('/api/v1/admin/inquiries', verifyAdminKey, async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       inquiries = await Contact.find().sort({ createdAt: -1 });
     } else {
-      // Return memory store if database is offline/disconnected
       inquiries = memoryInquiriesStore;
     }
 
     return res.status(200).json({ success: true, count: inquiries.length, data: inquiries });
   } catch (err) {
-    // If DB query fails, fallback safely to memory store
     return res.status(200).json({ success: true, count: memoryInquiriesStore.length, data: memoryInquiriesStore });
   }
 });
 
-// Delete Inquiry API (Upgraded to handle both DB and In-Memory deletion)
+// Delete Inquiry API (Handles MongoDB deletion and Syncs Memory array)
 app.delete('/api/v1/admin/inquiries/:id', verifyAdminKey, async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Delete from memory array
+    // 1. Delete from memory array
     const memoryIndex = memoryInquiriesStore.findIndex(item => item._id.toString() === id);
     if (memoryIndex !== -1) {
       memoryInquiriesStore.splice(memoryIndex, 1);
     }
 
-    // Delete from DB if connected
+    // 2. Delete from DB if connected
     if (mongoose.connection.readyState === 1) {
       await Contact.findByIdAndDelete(id);
     }
@@ -377,13 +384,13 @@ app.post('/api/v1/track/', async (req, res) => {
 
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'ACTIVE' }));
 
-// Dedicated Static Page Routes (Fixed file routing without deleting anything)
+// Dedicated Static Page Routes
 app.get('/admin-login.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-login.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/contact.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'contact.html')));
 app.get('/driver.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'driver.html')));
 
-// Wildcard Fallback (Express 5+ / path-to-regexp v8 compatible)
+// Wildcard Fallback (Express 5+ compatible)
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ success: false, message: 'API Endpoint Not Found' });
@@ -391,29 +398,23 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
 });
 
-// server.js - Socket connection inside upgrade
+// Socket.IO Server Logic
 io.on('connection', (socket) => {
   console.log('⚡ Client Connected:', socket.id);
 
-  // Join vehicle-specific room (optional for multi-fleet)
   socket.on('join_vehicle_room', (vehicleId) => {
     socket.join(`vehicle_${vehicleId}`);
   });
 
-  // Handle incoming driver telemetry
   socket.on('telemetry', async (data) => {
-    // 1. Broadcast to all clients / dashboard
     io.emit('telemetry_update', data);
 
-    // 2. Broadcast to specific room (if applicable)
     if (data.vehicle_id) {
       io.to(`vehicle_${data.vehicle_id}`).emit('telemetry_update', data);
     }
 
-    // 3. Save to MongoDB (History / Polyline route plotting)
     try {
       if (mongoose.connection.readyState === 1) {
-        // Vehicle Telemetry Model example
         await VehicleTelemetry.create({
           vehicle_id: data.vehicle_id,
           location: {
