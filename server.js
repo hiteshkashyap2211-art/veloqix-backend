@@ -77,8 +77,9 @@ const AdminAuth = mongoose.model('AdminAuth', AdminAuthSchema);
 const memoryOtpStore = new Map();
 const memoryInquiriesStore = []; // In-Memory Storage Fallback
 
-// 📧 High-Reliability Resend HTTP API Client Setup
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 📧 High-Reliability Resend HTTP API Client Setup (Crash-Safe Initialization)
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const SENDER_EMAIL = process.env.EMAIL_USER || 'hiteshkashyap2211@gmail.com';
 const TARGET_ADMIN = process.env.ADMIN_EMAIL || 'hiteshkashyap2211@gmail.com';
@@ -172,36 +173,44 @@ const handleSendOtp = async (req, res) => {
   console.log(`🔑 ADMIN LOGIN OTP CODE: [ ${otp} ]`);
   console.log(`========================================\n`);
 
-  // Dispatch Email via Resend HTTP API
-  try {
-    const data = await resend.emails.send({
-      from: 'Veloqix Security Portal <onboarding@resend.dev>',
-      to: TARGET_ADMIN,
-      subject: `🔑 Admin Passcode: ${otp}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #1e293b; border-radius: 10px; padding: 20px; background-color: #0f172a; color: #f8fafc;">
-          <h2 style="color: #38bdf8; text-align: center;">VELOQIX LOGISTICS</h2>
-          <p style="text-align: center; color: #94a3b8; font-size: 12px;">Admin Authentication Passcode</p>
-          <hr style="border-color: #334155;">
-          <p>Your one-time login code is:</p>
-          <div style="background-color: #1e293b; border: 1px solid #0284c7; padding: 15px; text-align: center; border-radius: 8px; margin: 15px 0;">
-            <span style="font-size: 30px; font-weight: bold; letter-spacing: 5px; color: #38bdf8; font-family: monospace;">${otp}</span>
+  // Dispatch Email via Resend HTTP API (Safe Fallback)
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: 'Veloqix Security Portal <onboarding@resend.dev>',
+        to: TARGET_ADMIN,
+        subject: `🔑 Admin Passcode: ${otp}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #1e293b; border-radius: 10px; padding: 20px; background-color: #0f172a; color: #f8fafc;">
+            <h2 style="color: #38bdf8; text-align: center;">VELOQIX LOGISTICS</h2>
+            <p style="text-align: center; color: #94a3b8; font-size: 12px;">Admin Authentication Passcode</p>
+            <hr style="border-color: #334155;">
+            <p>Your one-time login code is:</p>
+            <div style="background-color: #1e293b; border: 1px solid #0284c7; padding: 15px; text-align: center; border-radius: 8px; margin: 15px 0;">
+              <span style="font-size: 30px; font-weight: bold; letter-spacing: 5px; color: #38bdf8; font-family: monospace;">${otp}</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 11px;">Valid for 5 minutes. Do not share this code.</p>
           </div>
-          <p style="color: #94a3b8; font-size: 11px;">Valid for 5 minutes. Do not share this code.</p>
-        </div>
-      `
-    });
+        `
+      });
 
-    console.log(`✅ OTP Email Delivered via Resend API`);
+      console.log(`✅ OTP Email Delivered via Resend API`);
+      return res.status(200).json({
+        success: true,
+        message: `OTP sent successfully to ${TARGET_ADMIN}`
+      });
+    } catch (err) {
+      console.error('❌ Mail Delivery Failed:', err.message);
+      return res.status(200).json({
+        success: true,
+        message: 'OTP generated! Check email or terminal logs.'
+      });
+    }
+  } else {
+    console.warn('⚠️ RESEND_API_KEY missing. Email skipped, OTP available in console log.');
     return res.status(200).json({
       success: true,
-      message: `OTP sent successfully to ${TARGET_ADMIN}`
-    });
-  } catch (err) {
-    console.error('❌ Mail Delivery Failed:', err.message);
-    return res.status(200).json({
-      success: true,
-      message: 'OTP generated! Check email or terminal logs.'
+      message: 'OTP generated! Check terminal logs.'
     });
   }
 };
@@ -296,18 +305,22 @@ app.post('/api/v1/contact', async (req, res) => {
     req.io.emit('new_inquiry', inquiryPayload);
   }
 
-  // Send Email notification via Resend
-  try {
-    await resend.emails.send({
-      from: 'Veloqix Contact Form <onboarding@resend.dev>',
-      to: TARGET_ADMIN,
-      replyTo: email,
-      subject: `New Inquiry from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nCompany: ${company}\nMessage: ${message}`
-    });
-    console.log(`✅ Contact inquiry email sent for ${name}`);
-  } catch (error) {
-    console.error('⚠️ Contact Mail Error:', error.message);
+  // Send Email notification via Resend (Safe Fallback)
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: 'Veloqix Contact Form <onboarding@resend.dev>',
+        to: TARGET_ADMIN,
+        replyTo: email,
+        subject: `New Inquiry from ${name}`,
+        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nCompany: ${company}\nMessage: ${message}`
+      });
+      console.log(`✅ Contact inquiry email sent for ${name}`);
+    } catch (error) {
+      console.error('⚠️ Contact Mail Error:', error.message);
+    }
+  } else {
+    console.warn('⚠️ RESEND_API_KEY missing. Contact email dispatch skipped.');
   }
 
   return res.status(200).json({ success: true, message: 'Inquiry submitted successfully.' });
