@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Background: Deep Navy Blue for Trust & Enterprise Stability -->
+  <rect width="512" height="512" rx="110" fill="#0B132B" />
+  
+  <!-- Subtle Grid/Shield Outline for Security & Corporate Feel -->
+  <rect x="64" y="64" width="384" height="384" rx="80" fill="none" stroke="#1C2541" stroke-width="8" />
+
+  <!-- Abstract Interconnected Logistics Nodes & V shape -->
+  <!-- Left to Right Flow symbolizing Supply Chain & Network -->
+  <path d="M140 190L220 310L280 230L372 320" fill="none" stroke="#38BDF8" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Connecting Nodes / Data Points for Tech & B2B SaaS Integration -->
+  <circle cx="140" cy="190" r="16" fill="#38BDF8" />
+  <circle cx="220" cy="310" r="16" fill="#0EA5E9" />
+  <circle cx="280" cy="230" r="16" fill="#38BDF8" />
+  
+  <!-- Primary Highlighting Node (Signifying Accuracy & Milestone) -->
+  <circle cx="372" cy="320" r="22" fill="#F43F5E" />
+</svg>
