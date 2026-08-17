@@ -2,37 +2,25 @@
 <html lang="en" class="overflow-x-hidden scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Enterprise Solutions & Custom Architecture | Veloqix Technologies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Enterprise Offers & Custom Architecture | Veloqix Technologies</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brandMaersk: '#00243A',
-                        brandAccent: '#40B2E6',
-                        brandBg: '#F4F5F7',
-                        brandDark: '#0A121A',
-                        brandGold: '#D4AF37'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Favicon / Logo for Google Search Results -->
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/logo.png">
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
 
-    <!-- Organization Schema Markup for Google Knowledge / AI Overview -->
+    <!-- Schema Markup -->
     <script type="application/ld+json">
-        
         {
         "@context": "https://schema.org",
         "@graph": [
@@ -65,615 +53,623 @@
         ]
         }
     </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandMaersk: '#00243A',
+                        brandAccent: '#40B2E6',
+                        brandBg: '#F4F5F7',
+                        brandDark: '#0A121A',
+                        brandGold: '#D4AF37'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        .maersk-card-3d {
-            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+        .maersk-card { 
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
         }
-        .maersk-card-3d:hover {
-            box-shadow: 0 25px 50px -12px rgba(0, 36, 58, 0.25);
-            transform: translateY(-4px);
+        @media (min-width: 768px) {
+            .maersk-card:hover { 
+                transform: translateY(-6px); 
+                box-shadow: 0 20px 40px rgba(0, 36, 58, 0.12); 
+            }
         }
-
-        /* Unified 3D Interactive Model Canvas Effect */
-        .perspective-1000 {
-            perspective: 1000px;
-        }
-        .cube-3d {
-            width: 220px;
-            height: 220px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: spin3D 12s infinite linear;
-        }
-        .cube-face {
+        #three-canvas {
             position: absolute;
-            width: 220px;
-            height: 220px;
-            border: 2px solid #40B2E6;
-            background: rgba(0, 36, 58, 0.85);
-            backdrop-filter: blur(4px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 25px rgba(64, 178, 230, 0.3);
-            border-radius: 12px;
-        }
-        .face-front  { transform: rotateY(0deg) translateZ(110px); }
-        .face-back   { transform: rotateY(180deg) translateZ(110px); }
-        .face-right  { transform: rotateY(90deg) translateZ(110px); }
-        .face-left   { transform: rotateY(-90deg) translateZ(110px); }
-        .face-top    { transform: rotateX(90deg) translateZ(110px); }
-        .face-bottom { transform: rotateX(-90deg) translateZ(110px); }
-
-        @keyframes spin3D {
-            0% { transform: rotateX(15deg) rotateY(0deg); }
-            100% { transform: rotateX(15deg) rotateY(360deg); }
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-brandBg text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-brandAccent selection:text-brandMaersk">
+<body class="bg-brandBg text-gray-800 font-sans antialiased">
 
-    <!-- 1. GLOBAL ANNOUNCEMENT BAR -->
-    <div class="bg-brandDark text-white text-[11px] sm:text-xs py-2 px-4 sm:px-6 flex justify-between items-center border-b border-gray-800 relative z-50">
+    <!-- 1. GLOBAL ANNOUNCEMENT & SYSTEM TELEMETRY TICKER -->
+    <div class="bg-brandDark text-white text-[11px] sm:text-xs py-2 px-4 sm:px-6 flex justify-between items-center border-b border-gray-800/80 relative z-50">
         <div class="flex items-center gap-2 sm:gap-3 overflow-hidden whitespace-nowrap">
-            <span class="bg-brandAccent text-brandMaersk font-extrabold px-2 py-0.5 rounded text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0">Enterprise API Hub</span>
-            <span class="text-gray-300 truncate">Veloqix Integration Engines: 99.99% Uptime SLA Guaranteed across 500+ Nodes.</span>
+            <span class="bg-brandAccent text-brandMaersk font-extrabold px-2.5 py-0.5 rounded text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-brandMaersk animate-pulse"></span> Live Status
+            </span>
+            <span class="text-gray-300 truncate">Software Telemetry & Workforce Dispatch Network Active.</span>
         </div>
         <div class="hidden sm:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0">
-            <span class="hover:text-brandAccent cursor-pointer"><i class="fa-solid fa-code-branch mr-1"></i> REST API v2.4</span>
-            <span class="hover:text-brandAccent cursor-pointer"><i class="fa-solid fa-shield-halved mr-1"></i> SOC-2 & GDPR Certified</span>
+            <span class="hover:text-brandAccent transition-colors cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-signal text-emerald-400"></i> Telemetry Active</span>
+            <span class="hover:text-brandAccent transition-colors cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-headset"></i> Tech Desk</span>
         </div>
     </div>
 
-    <!-- 2. MAIN NAVIGATION NAVBAR -->
-    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+    <!-- 2. MAIN NAVIGATION NAVBAR (FIXED AND RESPONSIVE) -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
-            <a href="index.html" class="text-xl sm:text-2xl font-black text-brandMaersk flex items-center gap-2 tracking-tight group">
-                <i class="fa-solid fa-asterisk text-brandAccent text-2xl sm:text-3xl transition-transform duration-300 group-hover:rotate-45"></i> 
-                <span>VELOQIX <span class="text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded shadow-sm">TECHNOLOGIES</span></span>
+            
+            <!-- Brand Logo -->
+            <a href="index.html" class="text-lg sm:text-2xl font-black text-brandMaersk flex items-center gap-2 tracking-tight group shrink-0">
+                <i class="fa-solid fa-asterisk text-brandAccent text-xl sm:text-2xl group-hover:rotate-90 transition-transform duration-500"></i> 
+                <span>VELOQIX <span class="text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 bg-brandMaersk text-white rounded uppercase">TECHNOLOGIES</span></span>
             </a>
 
-            <div class="hidden lg:flex items-center space-x-8 text-sm font-bold text-gray-700">
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-7 text-xs sm:text-sm font-bold text-gray-700">
                 <a href="index.html" class="hover:text-brandAccent transition-colors">Home</a>
-                <a href="services.html" class="hover:text-brandAccent transition-colors">Transportation & Services</a>
+                <a href="services.html" class="hover:text-brandAccent transition-colors">Software & Dispatch</a>
                 <a href="products.html" class="hover:text-brandAccent transition-colors">Proprietary Software</a>
                 <a href="solutions.html" class="text-brandAccent border-b-2 border-brandAccent pb-1">Enterprise Solutions</a>
                 <a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a>
                 <a href="contact.html" class="hover:text-brandAccent transition-colors">Contact</a>
             </div>
 
-            <div class="flex items-center gap-3">
-                <a href="contact.html" class="hidden sm:inline-flex px-4 py-2 bg-brandMaersk text-white text-xs font-bold rounded hover:bg-gray-800 transition shadow">Enterprise Consult</a>
-                <button id="mobileMenuBtn" aria-label="Toggle Navigation Menu" class="lg:hidden p-2 rounded-lg text-brandMaersk hover:bg-gray-100 focus:outline-none transition-colors">
-                    <i id="menuIcon" class="fa-solid fa-bars text-xl"></i>
+            <!-- Desktop Action CTA & Mobile Hamburger -->
+            <div class="flex items-center space-x-3">
+                <button onclick="openModal()" class="hidden sm:inline-flex bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-lg shadow-md uppercase tracking-wider transition-colors">
+                    Claim Offer
+                </button>
+                <button id="mobileMenuBtn" class="p-2 text-brandMaersk text-xl lg:hidden focus:outline-none hover:text-brandAccent transition-colors" aria-label="Toggle Navigation">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
                 </button>
             </div>
         </div>
 
-        <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-200 px-6 py-4 space-y-3 font-bold text-sm text-gray-700 shadow-lg">
-            <a href="index.html" class="block hover:text-brandAccent transition-colors">Home</a>
-            <a href="services.html" class="block hover:text-brandAccent transition-colors">Transportation & Services</a>
-            <a href="products.html" class="block hover:text-brandAccent transition-colors">Proprietary Software</a>
-            <a href="solutions.html" class="block text-brandAccent bg-sky-50 px-3 py-2 rounded-md">Enterprise Solutions</a>
-            <a href="about.html" class="block hover:text-brandAccent transition-colors">About Veloqix</a>
-            <a href="contact.html" class="block hover:text-brandAccent transition-colors">Contact</a>
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-200 px-5 py-4 space-y-3 font-bold text-sm text-gray-700 shadow-xl">
+            <a href="index.html" class="block py-1 hover:text-brandAccent transition-colors">Home</a>
+            <a href="services.html" class="block py-1 hover:text-brandAccent transition-colors">Software & Dispatch</a>
+            <a href="products.html" class="block py-1 hover:text-brandAccent transition-colors">Proprietary Software</a>
+            <a href="solutions.html" class="block text-brandAccent bg-sky-50 px-3 py-2 rounded-lg font-black">Enterprise Solutions</a>
+            <a href="about.html" class="block py-1 hover:text-brandAccent transition-colors">About Veloqix</a>
+            <a href="contact.html" class="block py-1 hover:text-brandAccent transition-colors">Contact</a>
+            <button onclick="openModal()" class="w-full mt-2 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs py-3 rounded-lg shadow-md uppercase tracking-wider transition-colors">
+                Claim Offer Now
+            </button>
         </div>
     </nav>
 
-    <!-- 3. HERO SECTION -->
-    <section class="bg-brandMaersk text-white py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden min-h-[450px] flex items-center">
-        <div class="absolute inset-0 bg-[radial-gradient(#40B2E6_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
-        <div class="max-w-7xl mx-auto relative z-10 w-full">
-            <div class="max-w-3xl">
-                <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-2">Bespoke Software Architecture</span>
-                <h1 class="text-3xl sm:text-6xl font-black leading-tight tracking-tight mb-4">
-                    Enterprise Industry Solutions
+    <!-- 3. HERO SECTION WITH NEW 3D ENTERPRISE LOGISTICS MESH -->
+    <section id="heroSection" class="bg-gradient-to-r from-brandMaersk via-[#001D2F] to-[#04101A] text-white py-16 px-4 sm:px-6 relative overflow-hidden">
+        <canvas id="three-canvas"></canvas>
+
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            <div class="lg:col-span-7">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 uppercase font-black text-xs tracking-widest mb-4">
+                    🔥 Enterprise Starter Package
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-black leading-tight mb-4 drop-shadow-md">
+                    Transform Your Logistics & PropTech Stack for Just <span class="text-amber-400">$999</span>
                 </h1>
-                <p class="text-gray-300 text-sm sm:text-lg leading-relaxed mb-6">
-                    Bespoke software development and integration for enterprise supply chain players. We bridge legacy enterprise infrastructure with modern, cloud-native microservices, IoT telemetry, and real-time dispatch systems.
+                <p class="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
+                    Deploy full-scale enterprise microservices, SAP/Oracle API integrations, dynamic workforce routing, and billing automation with 0% risk.
                 </p>
-                <div class="flex flex-wrap gap-3">
-                    <a href="#3d-telemetry" class="px-5 py-2.5 bg-brandAccent text-brandMaersk font-extrabold rounded text-xs uppercase tracking-wider hover:bg-sky-400 transition shadow">
-                        <i class="fa-solid fa-cube mr-1.5"></i> Explore 3D Node Telemetry
+                
+                <div class="flex flex-wrap gap-4 mb-6 text-xs text-emerald-300 font-semibold">
+                    <span><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Zero Upfront Risk</span>
+                    <span><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> 14-Day Free Proof-of-Concept</span>
+                    <span><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> 99.99% SLA Guarantee</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="openModal()" class="px-6 py-3.5 bg-emerald-500 text-white font-black rounded-lg text-xs uppercase tracking-wider hover:bg-emerald-600 transition shadow-lg text-center">
+                        <i class="fa-solid fa-bolt mr-2"></i> Lock-In $999 Starter Deal
+                    </button>
+                    <a href="#calculator" class="px-6 py-3.5 border border-white/30 text-white font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-white/10 transition text-center">
+                        <i class="fa-solid fa-calculator mr-2"></i> Estimate Costs
                     </a>
-                    <a href="#api-integrations" class="px-5 py-2.5 border border-white/30 text-white font-bold rounded text-xs uppercase tracking-wider hover:bg-white/10 transition">
-                        API Integrations
-                    </a>
                 </div>
+            </div>
+
+            <!-- Lead Capture Form -->
+            <div class="lg:col-span-5 bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-white/20 shadow-2xl">
+                <h3 class="text-xl font-black text-white mb-2">Book Architecture Audit</h3>
+                <p class="text-xs text-gray-300 mb-6">Get a full tech stack blueprint and trial proposal in 4 hours.</p>
+                
+                <form onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase mb-1 text-gray-200">Work Email</label>
+                        <input type="email" required placeholder="name@company.com" class="w-full bg-brandDark/80 border border-gray-600 rounded-lg p-3 text-xs text-white focus:border-brandAccent focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase mb-1 text-gray-200">Company / Operations Scale</label>
+                        <select class="w-full bg-brandDark/80 border border-gray-600 rounded-lg p-3 text-xs text-white focus:border-brandAccent focus:outline-none">
+                            <option>1 - 50 Vehicles / Warehouses</option>
+                            <option>50 - 500 Vehicles / Warehouses</option>
+                            <option>500+ Enterprise Fleet Scale</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 bg-brandAccent text-brandMaersk font-extrabold rounded-lg text-xs uppercase tracking-wider hover:bg-sky-400 transition shadow-md">
+                        Claim 50% Off & Free POC <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </section>
 
-    <!-- 4. KEY METRICS -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-20">
-        <div class="bg-white rounded-xl shadow-xl border border-gray-200 p-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div class="border-r border-gray-100 last:border-0">
-                <div class="text-2xl sm:text-4xl font-black text-brandMaersk">&lt; 15ms</div>
-                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1">API Dispatch Latency</div>
+    <!-- 4. KEY STATS BANNER -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 relative z-20">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="p-2 border-r border-b md:border-b-0 border-gray-100">
+                <div class="text-2xl sm:text-4xl font-black text-brandMaersk">10,000+</div>
+                <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mt-1">Sourced Workforce</div>
             </div>
-            <div class="border-r border-gray-100 last:border-0">
-                <div class="text-2xl sm:text-4xl font-black text-brandAccent">99.99%</div>
-                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1">System Availability SLA</div>
+            <div class="p-2 md:border-r border-b md:border-b-0 border-gray-100">
+                <div class="text-2xl sm:text-4xl font-black text-brandAccent">50+</div>
+                <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mt-1">Hub Corridors</div>
             </div>
-            <div class="border-r border-gray-100 last:border-0">
-                <div class="text-2xl sm:text-4xl font-black text-brandMaersk">1M+</div>
-                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1">Daily IoT Telemetry Events</div>
+            <div class="p-2 border-r border-gray-100">
+                <div class="text-2xl sm:text-4xl font-black text-brandMaersk">99.99%</div>
+                <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mt-1">SLA Reliability</div>
             </div>
-            <div>
-                <div class="text-2xl sm:text-4xl font-black text-brandAccent">Zero</div>
-                <div class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase mt-1">Legacy Downtime Direct Migration</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. CORE SOLUTIONS -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-1">Architectural Framework</span>
-            <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk">End-to-End Enterprise Systems</h2>
-            <p class="text-gray-600 text-xs sm:text-sm mt-2">Modular software architectures built specifically for high-throughput supply chain networks.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="maersk-card-3d bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="w-14 h-14 rounded-xl bg-sky-50 text-brandAccent flex items-center justify-center text-3xl mb-6"><i class="fa-solid fa-network-wired"></i></div>
-                    <h3 class="text-xl font-bold text-brandMaersk mb-3">Supply Chain API Integration</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">Connect legacy ERP systems directly to Veloqix dispatch, driver onboarding, and billing APIs.</p>
-                </div>
-                <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-brandMaersk">
-                    <span>REST / gRPC Endpoints</span>
-                    <i class="fa-solid fa-arrow-right text-brandAccent"></i>
-                </div>
-            </div>
-
-            <div class="maersk-card-3d bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="w-14 h-14 rounded-xl bg-blue-50 text-brandMaersk flex items-center justify-center text-3xl mb-6"><i class="fa-solid fa-microchip"></i></div>
-                    <h3 class="text-xl font-bold text-brandMaersk mb-3">Custom SaaS Engineering</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">We build tailor-made cloud-native logistics portals, workforce tools, and tracking dashboards.</p>
-                </div>
-                <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-brandMaersk">
-                    <span>Cloud Native Microservices</span>
-                    <i class="fa-solid fa-arrow-right text-brandAccent"></i>
-                </div>
-            </div>
-
-            <div class="maersk-card-3d bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="w-14 h-14 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-3xl mb-6"><i class="fa-solid fa-brain"></i></div>
-                    <h3 class="text-xl font-bold text-brandMaersk mb-3">AI Dynamic Route & Fleet Engine</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">Proprietary AI algorithms calculate optimal truck routing, fuel utilization, and toll costs.</p>
-                </div>
-                <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-brandMaersk">
-                    <span>Predictive Telemetry</span>
-                    <i class="fa-solid fa-arrow-right text-brandAccent"></i>
-                </div>
+            <div class="p-2">
+                <div class="text-2xl sm:text-4xl font-black text-brandAccent">24/7</div>
+                <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mt-1">Live Telemetry</div>
             </div>
         </div>
     </section>
 
-    <!-- NEW SECTION 5.1: ENTERPRISE API INTEGRATIONS & CONNECTORS -->
-    <section id="api-integrations" class="bg-white py-16 border-t border-gray-200">
+    <!-- 5. LOW STARTER PRICING TIERS -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <span class="text-emerald-600 font-extrabold text-xs tracking-widest uppercase block mb-1">Unbeatable Value Pricing</span>
+            <h2 class="text-3xl font-black text-brandMaersk">Start Small, Scale Unlimitedly</h2>
+            <p class="text-gray-600 text-xs sm:text-sm mt-2">Low introductory deployment fees tailored for enterprise logistics and property hubs.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm maersk-card relative flex flex-col justify-between">
+                <div>
+                    <span class="bg-gray-100 text-gray-700 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase">Starter Edition</span>
+                    <h3 class="text-xl font-bold text-brandMaersk mt-4">API Core Adapter</h3>
+                    <div class="my-4">
+                        <span class="text-4xl font-black text-brandMaersk">$499</span>
+                        <span class="text-gray-400 text-xs text-semibold line-through ml-2">$1,500</span>
+                        <span class="text-xs text-gray-500 block mt-1">One-time setup fee</span>
+                    </div>
+                    <ul class="text-xs space-y-3 text-gray-600 border-t border-gray-100 pt-4">
+                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> SAP/Oracle/Custom ERP Connectors</li>
+                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> 100,000 API calls/mo</li>
+                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Standard SLA & Support</li>
+                    </ul>
+                </div>
+                <button onclick="openModal()" class="mt-8 w-full py-3 border border-brandMaersk text-brandMaersk font-extrabold rounded-lg text-xs hover:bg-brandMaersk hover:text-white transition">Get Started</button>
+            </div>
+
+            <div class="bg-brandMaersk text-white p-8 rounded-2xl border-2 border-emerald-400 shadow-xl relative flex flex-col justify-between transform -translate-y-2">
+                <span class="absolute -top-3 right-6 bg-emerald-500 text-white font-extrabold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">Most Popular Deal</span>
+                <div>
+                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase">Enterprise Growth</span>
+                    <h3 class="text-xl font-bold mt-4">Cloud Suite & AI Engine</h3>
+                    <div class="my-4">
+                        <span class="text-4xl font-black text-amber-400">$999</span>
+                        <span class="text-gray-400 text-xs line-through ml-2">$3,000</span>
+                        <span class="text-xs text-gray-300 block mt-1">One-time setup fee</span>
+                    </div>
+                    <ul class="text-xs space-y-3 text-gray-200 border-t border-white/10 pt-4">
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Everything in Starter Adapter</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> AI Dynamic Route Optimization</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Driver Telemetry & GPS Portal</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> 99.99% Availability SLA</li>
+                    </ul>
+                </div>
+                <button onclick="openModal()" class="mt-8 w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-lg text-xs transition shadow-md">Claim Pro Deal</button>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm maersk-card relative flex flex-col justify-between">
+                <div>
+                    <span class="bg-gray-100 text-gray-700 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase">Full Custom Build</span>
+                    <h3 class="text-xl font-bold text-brandMaersk mt-4">Bespoke Architecture</h3>
+                    <div class="my-4">
+                        <span class="text-4xl font-black text-brandMaersk">$2,499</span>
+                        <span class="text-gray-400 text-xs line-through ml-2">$6,000</span>
+                        <span class="text-xs text-gray-500 block mt-1">Tailor-made solution</span>
+                    </div>
+                    <ul class="text-xs space-y-3 text-gray-600 border-t border-gray-100 pt-4">
+                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> 100% Source Code Ownership</li>
+                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> On-Premise Cloud Deployment</li>
+                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Dedicated Solution Architect</li>
+                    </ul>
+                </div>
+                <button onclick="openModal()" class="mt-8 w-full py-3 border border-brandMaersk text-brandMaersk font-extrabold rounded-lg text-xs hover:bg-brandMaersk hover:text-white transition">Request Consult</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. ENTERPRISE COMPLIANCE & SECURITY SECTION -->
+    <section class="bg-white py-14 border-y border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-1">Seamless Interoperability</span>
-                <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk">Enterprise API & ERP Connectors</h2>
-                <p class="text-gray-600 text-xs sm:text-sm mt-2">Plug-and-play middleware connectors for industry-standard ERPs and Warehouse Management Systems.</p>
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <span class="text-emerald-600 font-extrabold text-xs tracking-widest uppercase block mb-1">Enterprise Grade Security</span>
+                <h2 class="text-3xl font-black text-brandMaersk">Built for Enterprise Scalability</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- SAP Integration -->
-                <div class="p-6 rounded-2xl bg-brandBg border border-gray-200 hover:border-brandAccent transition shadow-sm">
-                    <div class="w-12 h-12 rounded-lg bg-sky-100 text-brandMaersk flex items-center justify-center text-2xl font-black mb-4">
-                        <i class="fa-solid fa-diagram-project"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-brandMaersk mb-2">SAP S/4HANA & ECC</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed mb-4">Bi-directional IDoc/REST integration for automated inventory sync, gate passes, and freight settlement billing.</p>
-                    <ul class="text-[11px] text-gray-500 space-y-1.5 font-medium">
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-1.5"></i> Real-time PO/SO Status Mapping</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-1.5"></i> Automated e-Way Bill & GST Invoicing</li>
-                    </ul>
+                <div class="bg-brandBg p-8 rounded-2xl border border-gray-200 maersk-card">
+                    <div class="text-brandAccent text-3xl font-black mb-3"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="font-bold text-lg text-brandMaersk mb-2">SOC2 & ISO Compliant</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">End-to-end encryption for critical supply chain telemetry, vehicle dispatch tracking, and tenant data.</p>
                 </div>
 
-                <!-- Oracle Integration -->
-                <div class="p-6 rounded-2xl bg-brandBg border border-gray-200 hover:border-brandAccent transition shadow-sm">
-                    <div class="w-12 h-12 rounded-lg bg-sky-100 text-brandMaersk flex items-center justify-center text-2xl font-black mb-4">
-                        <i class="fa-solid fa-server"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-brandMaersk mb-2">Oracle SCM & SCM Cloud</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed mb-4">Direct integration with Oracle Transportation Management (OTM) for automated fleet dispatch and route optimization.</p>
-                    <ul class="text-[11px] text-gray-500 space-y-1.5 font-medium">
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-1.5"></i> OTM Carrier Tender Synchronization</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-1.5"></i> High-Speed Batch Telemetry Feeds</li>
-                    </ul>
+                <div class="bg-brandBg p-8 rounded-2xl border border-gray-200 maersk-card">
+                    <div class="text-brandAccent text-3xl font-black mb-3"><i class="fa-solid fa-server"></i></div>
+                    <h3 class="font-bold text-lg text-brandMaersk mb-2">High Availability Infrastructure</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Multi-region cloud failover architecture ensuring 99.99% uptime for logistics dispatches.</p>
                 </div>
 
-                <!-- Custom WMS/TMS -->
-                <div class="p-6 rounded-2xl bg-brandBg border border-gray-200 hover:border-brandAccent transition shadow-sm">
-                    <div class="w-12 h-12 rounded-lg bg-sky-100 text-brandMaersk flex items-center justify-center text-2xl font-black mb-4">
-                        <i class="fa-solid fa-warehouse"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-brandMaersk mb-2">Custom WMS & Legacy TMS</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed mb-4">Custom Webhooks, GraphQL, and gRPC endpoints tailored for proprietary in-house warehouse management databases.</p>
-                    <ul class="text-[11px] text-gray-500 space-y-1.5 font-medium">
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-1.5"></i> Webhook Event Triggers (&lt; 20ms)</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-1.5"></i> Legacy SQL/Oracle DB Adapters</li>
-                    </ul>
+                <div class="bg-brandBg p-8 rounded-2xl border border-gray-200 maersk-card">
+                    <div class="text-brandAccent text-3xl font-black mb-3"><i class="fa-solid fa-code-branch"></i></div>
+                    <h3 class="font-bold text-lg text-brandMaersk mb-2">Seamless ERP Connectors</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Native micro-APIs connecting directly into SAP, Oracle, MyPGEase, and [FN Logistic Hub Portal](https://fn-logistic-hub.onrender.com/).</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- NEW SECTION 5.2: ENTERPRISE ARCHITECTURE CARDS / DIAGRAM -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-1">Infrastructure Blueprint</span>
-            <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk">Enterprise Architecture Topology</h2>
-            <p class="text-gray-600 text-xs sm:text-sm mt-2">How Veloqix secure middleware connects edge devices, enterprise ERPs, and cloud analytics.</p>
-        </div>
-
-        <div class="bg-brandMaersk text-white rounded-2xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative z-10 text-center lg:text-left">
-                <!-- Layer 1 -->
-                <div class="bg-white/10 backdrop-blur border border-white/10 p-6 rounded-xl flex flex-col justify-between">
+    <!-- 7. ESTIMATOR TOOL SECTION -->
+    <section id="calculator" class="bg-brandMaersk text-white py-14 px-4 sm:px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-1">Instant Price Estimator</span>
+                <h2 class="text-2xl sm:text-3xl font-black">See Your Discounted Costs</h2>
+            </div>
+            <div class="bg-brandDark p-6 sm:p-8 rounded-2xl border border-brandAccent/30 grid grid-cols-1 md:grid-cols-2 gap-6 items-center shadow-2xl">
+                <div class="space-y-4">
                     <div>
-                        <span class="text-[10px] font-extrabold text-brandAccent uppercase tracking-widest block mb-2">Layer 1: Edge & IoT</span>
-                        <h4 class="font-bold text-sm text-white mb-2">Fleet & Warehouse Sensors</h4>
-                        <p class="text-[11px] text-gray-300">GPS Trackers, RFID Scanners, Cold Chain Sensors & Driver Mobile Apps.</p>
+                        <label class="text-[10px] font-bold text-gray-300 uppercase block mb-1">Architecture Type</label>
+                        <select id="calcType" onchange="calculateEstimate()" class="w-full bg-brandMaersk border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-brandAccent">
+                            <option value="499">API & ERP Connection ($499)</option>
+                            <option value="999">SaaS Tracking & Telemetry ($999)</option>
+                            <option value="2499">Custom AI Microservices ($2,499)</option>
+                        </select>
                     </div>
-                    <div class="mt-4 pt-3 border-t border-white/10 text-[10px] text-emerald-400 font-mono">MQTT / WebSockets</div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-300 uppercase block mb-1">Fleet / Node Size</label>
+                        <select id="calcNodes" onchange="calculateEstimate()" class="w-full bg-brandMaersk border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-brandAccent">
+                            <option value="1">Up to 50 Active Nodes (Base)</option>
+                            <option value="1.2">50 - 500 Nodes (+20%)</option>
+                            <option value="1.5">500+ Enterprise Nodes (+50%)</option>
+                        </select>
+                    </div>
                 </div>
-
-                <!-- Layer 2 -->
-                <div class="bg-white/10 backdrop-blur border border-white/10 p-6 rounded-xl flex flex-col justify-between">
-                    <div>
-                        <span class="text-[10px] font-extrabold text-brandAccent uppercase tracking-widest block mb-2">Layer 2: API Gateway</span>
-                        <h4 class="font-bold text-sm text-white mb-2">Veloqix Integration Hub</h4>
-                        <p class="text-[11px] text-gray-300">AES-256 Encrypted Microservices Gateway with Dynamic Load Balancing.</p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-white/10 text-[10px] text-brandAccent font-mono">REST / gRPC Core</div>
-                </div>
-
-                <!-- Layer 3 -->
-                <div class="bg-white/10 backdrop-blur border border-white/10 p-6 rounded-xl flex flex-col justify-between">
-                    <div>
-                        <span class="text-[10px] font-extrabold text-brandAccent uppercase tracking-widest block mb-2">Layer 3: ERP Connectors</span>
-                        <h4 class="font-bold text-sm text-white mb-2">Enterprise Adapters</h4>
-                        <p class="text-[11px] text-gray-300">Bi-directional synchronization layer for SAP, Oracle, and Custom WMS databases.</p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-white/10 text-[10px] text-amber-300 font-mono">Zero Downtime Sync</div>
-                </div>
-
-                <!-- Layer 4 -->
-                <div class="bg-white/10 backdrop-blur border border-white/10 p-6 rounded-xl flex flex-col justify-between">
-                    <div>
-                        <span class="text-[10px] font-extrabold text-brandAccent uppercase tracking-widest block mb-2">Layer 4: Intelligence</span>
-                        <h4 class="font-bold text-sm text-white mb-2">Analytics & Dispatch Engine</h4>
-                        <p class="text-[11px] text-gray-300">Automated workforce deployment, route optimization, and live billing dashboards.</p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-white/10 text-[10px] text-emerald-400 font-mono">AI Telemetry Analytics</div>
+                <div class="bg-brandMaersk p-6 rounded-xl border border-white/10 text-center">
+                    <span class="text-xs text-gray-400 font-bold uppercase">Estimated Offer Total</span>
+                    <div id="estCost" class="text-4xl font-black text-amber-400 my-2">$499</div>
+                    <button onclick="openModal()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 font-extrabold rounded text-xs uppercase transition shadow-md">Lock In Offer</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- NEW SECTION 5.3: CLIENT ONBOARDING WORKFLOW -->
-    <section class="bg-white py-16 border-t border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-1">Deployment Lifecycle</span>
-                <h2 class="text-2xl sm:text-4xl font-black text-brandMaersk">Client Onboarding Workflow</h2>
-                <p class="text-gray-600 text-xs sm:text-sm mt-2">A structured 4-stage process to deploy custom software solutions for enterprise clients.</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Step 1 -->
-                <div class="relative bg-brandBg p-6 rounded-xl border border-gray-200">
-                    <span class="text-3xl font-black text-brandAccent/40 block mb-2">01</span>
-                    <h3 class="font-bold text-brandMaersk text-sm mb-2">Requirement Audit</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed">Our solution architects audit existing supply chain infrastructure and define custom API specs.</p>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="relative bg-brandBg p-6 rounded-xl border border-gray-200">
-                    <span class="text-3xl font-black text-brandAccent/40 block mb-2">02</span>
-                    <h3 class="font-bold text-brandMaersk text-sm mb-2">Sandbox Integration</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed">Rapid staging environment setup with mock SAP/Oracle data feeds to validate latency and SLAs.</p>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="relative bg-brandBg p-6 rounded-xl border border-gray-200">
-                    <span class="text-3xl font-black text-brandAccent/40 block mb-2">03</span>
-                    <h3 class="font-bold text-brandMaersk text-sm mb-2">UAT & Security Testing</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed">Rigorous penetration testing, SOC-2 compliance checks, and user acceptance sign-offs.</p>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="relative bg-brandBg p-6 rounded-xl border border-gray-200">
-                    <span class="text-3xl font-black text-brandAccent/40 block mb-2">04</span>
-                    <h3 class="font-bold text-brandMaersk text-sm mb-2">Production Cutover</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed">Zero-downtime deployment backed by 24/7 enterprise operations desk and guaranteed uptime SLAs.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. SINGLE UNIFIED FRONT-VIEW 3D MODEL SECTION -->
-    <section id="3d-telemetry" class="bg-brandDark text-white py-20 px-4 sm:px-6 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="text-brandAccent uppercase font-bold text-xs tracking-widest block mb-2">3D Fleet Matrix & Global Network Mesh</span>
-                <h2 class="text-2xl sm:text-4xl font-black mb-4">Autonomous 3D Logistics Telemetry</h2>
-                <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
-                    Our 3D spatial node tracker simulates live cargo temperature, RFID gate events, and multi-node fleet routing in a fully responsive environment with a real-time interactive 3D point-cloud mesh representing global logistics distribution nodes.
-                </p>
-            </div>
-
-            <!-- Single Front-View 3D Interactive Container -->
-            <div class="relative w-full max-w-4xl mx-auto min-h-[420px] bg-brandMaersk/60 rounded-2xl border border-brandAccent/30 shadow-2xl p-6 flex flex-col items-center justify-center overflow-hidden">
-                
-                <!-- Background Canvas Orbit Layer -->
-                <canvas id="interactive3dCanvas" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-0"></canvas>
-
-                <!-- Foreground 3D Cube Model Layer (Front & Center View) -->
-                <div class="relative z-10 perspective-1000 my-8">
-                    <div class="cube-3d">
-                        <div class="cube-face face-front">
-                            <i class="fa-solid fa-truck-fast text-4xl text-brandAccent mb-2"></i>
-                            <span class="text-xs font-bold text-white">Fleet Node #1</span>
-                            <span class="text-[10px] text-emerald-400 font-mono mt-1">Status: Active</span>
-                        </div>
-                        <div class="cube-face face-back">
-                            <i class="fa-solid fa-snowflake text-4xl text-sky-300 mb-2"></i>
-                            <span class="text-xs font-bold text-white">Cold Storage</span>
-                            <span class="text-[10px] text-sky-300 font-mono mt-1">-18.5°C</span>
-                        </div>
-                        <div class="cube-face face-right">
-                            <i class="fa-solid fa-tower-broadcast text-4xl text-brandAccent mb-2"></i>
-                            <span class="text-xs font-bold text-white">5G Telemetry</span>
-                            <span class="text-[10px] text-emerald-400 font-mono mt-1">Latency &lt;10ms</span>
-                        </div>
-                        <div class="cube-face face-left">
-                            <i class="fa-solid fa-shield-halved text-4xl text-amber-400 mb-2"></i>
-                            <span class="text-xs font-bold text-white">SOC-2 Vault</span>
-                            <span class="text-[10px] text-amber-300 font-mono mt-1">Encrypted</span>
-                        </div>
-                        <div class="cube-face face-top">
-                            <i class="fa-solid fa-box text-3xl text-brandAccent"></i>
-                        </div>
-                        <div class="cube-face face-bottom">
-                            <i class="fa-solid fa-database text-3xl text-brandAccent"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Overlay Controls / Details Bar -->
-                <div class="relative z-10 w-full flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-white/10 text-xs">
-                    <div class="text-[11px] text-gray-300 font-mono bg-brandDark/80 px-3 py-1.5 rounded border border-gray-700">
-                        <i class="fa-solid fa-hand-pointer text-brandAccent mr-1"></i> Drag mouse/finger to rotate 3D Mesh
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="bg-white/5 px-3 py-1 rounded border border-white/10">
-                            <span class="text-brandAccent font-bold">500+ Nodes</span> <span class="text-gray-400 text-[10px]">Micro-Data Centers</span>
-                        </div>
-                        <div class="bg-white/5 px-3 py-1 rounded border border-white/10">
-                            <span class="text-emerald-400 font-bold">Interactive</span> <span class="text-gray-400 text-[10px]">3D Topology</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- 7. ENTERPRISE CTA SECTION -->
+    <!-- 8. ENTERPRISE CTA BAR -->
     <section class="bg-brandMaersk text-white py-12 px-4 sm:px-6 border-t border-gray-800">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div>
-                <h3 class="text-xl sm:text-2xl font-black">Ready to Modernize Your Supply Chain Architecture?</h3>
-                <p class="text-gray-300 text-xs sm:text-sm mt-1">Speak directly with our enterprise software architects to plan your custom API integration.</p>
+                <h3 class="text-2xl font-black">Partner with Veloqix Technologies</h3>
+                <p class="text-gray-300 text-xs sm:text-sm mt-1">Transform your logistics and workforce operations with tailored enterprise solutions.</p>
             </div>
-            <a href="contact.html" class="px-8 py-3.5 bg-brandAccent text-brandMaersk font-extrabold rounded hover:bg-sky-400 transition text-xs uppercase tracking-wider shrink-0 shadow-lg">
-                Schedule Architecture Review <i class="fa-solid fa-arrow-right ml-1"></i>
-            </a>
+            <button onclick="openModal()" class="w-full md:w-auto px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-lg transition text-xs uppercase tracking-wider shrink-0 text-center shadow-lg">
+                Claim Enterprise Offer <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
         </div>
     </section>
 
-    <!-- 8. CORPORATE FOOTER -->
-    <footer class="bg-brandMaersk text-white py-12 sm:py-16 border-t border-gray-800 text-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+    <!-- 9. UPGRADED HIGH-TRUST MODAL FORM -->
+    <div id="leadModal" class="fixed inset-0 bg-brandDark/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 relative border border-gray-100 shadow-2xl transform transition-all">
+            
+            <!-- Close Button -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-brandMaersk hover:bg-gray-200 text-sm font-bold transition-all" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Trust Header & Badge -->
+            <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider border border-emerald-200">
+                    <i class="fa-solid fa-shield-halved text-emerald-500"></i> SOC2 Type II Certified
+                </span>
+                <span class="inline-flex items-center gap-1 text-amber-500 text-[11px] font-bold ml-auto">
+                    <i class="fa-solid fa-star"></i> 4.9/5 (200+ Enterprise Clients)
+                </span>
+            </div>
+
+            <!-- Heading & Value Prop -->
+            <h3 class="text-2xl font-black text-brandMaersk tracking-tight">Claim Enterprise Offer</h3>
+            <p class="text-xs text-gray-500 mt-1 mb-5">
+                Fill out the form to unlock your <span class="font-bold text-emerald-600">50% discount</span>, architecture blueprint, and 14-day zero-risk trial.
+            </p>
+
+            <!-- Lead Form -->
+            <form onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">Work Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                            <i class="fa-solid fa-envelope"></i>
+                        </span>
+                        <input type="email" required placeholder="name@company.com" class="w-full bg-brandBg border border-gray-300 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-brandAccent focus:ring-2 focus:ring-brandAccent/20 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">Company Name</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <input type="text" required placeholder="e.g. Acme Logistics Global" class="w-full bg-brandBg border border-gray-300 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-brandAccent focus:ring-2 focus:ring-brandAccent/20 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">Project / Tech Stack Needs</label>
+                    <textarea rows="3" placeholder="Tell us briefly about your fleet size, API requirements, or current challenges..." class="w-full bg-brandBg border border-gray-300 rounded-lg p-3 text-xs text-gray-800 focus:outline-none focus:border-brandAccent focus:ring-2 focus:ring-brandAccent/20 transition"></textarea>
+                </div>
+
+                <!-- Primary Action Button -->
+                <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-lg text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                    <span>Get 50% Off & Free Architecture Plan</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Trust Footer & Security Guarantee -->
+            <div class="mt-5 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between text-[10px] text-gray-500 font-medium gap-2">
+                <span class="flex items-center gap-1">
+                    <i class="fa-solid fa-lock text-emerald-500"></i> 256-Bit SSL Encrypted
+                </span>
+                <span class="flex items-center gap-1">
+                    <i class="fa-solid fa-credit-card-slash text-brandAccent"></i> No Credit Card Required
+                </span>
+                <span class="flex items-center gap-1">
+                    <i class="fa-solid fa-user-shield text-gray-400"></i> 100% Data Privacy
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. CORPORATE FOOTER -->
+    <footer class="bg-brandMaersk text-white py-14 border-t border-gray-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-                <div class="text-lg sm:text-xl font-black tracking-tight mb-4 flex items-center gap-2">
+                <div class="text-lg font-black tracking-tight mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-asterisk text-brandAccent text-2xl"></i> VELOQIX
                 </div>
                 <p class="text-gray-400 leading-relaxed">Integrated Freight Logistics, Industrial Workforce Recruitment, and Custom Software Solutions.</p>
             </div>
             <div>
-                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Solutions</h5>
-                <ul class="space-y-2.5 text-gray-400">
-                    <li><a href="services.html" class="hover:text-brandAccent">Intermodal Transport</a></li>
-                    <li><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="hover:text-brandAccent">FN Logistic Hub Portal</a></li>
-                    <li><a href="https://pgease.pythonanywhere.com" target="_blank" class="hover:text-brandAccent">MyPGEase PropTech</a></li>
-                    <li><a href="solutions.html" class="hover:text-brandAccent">Custom SaaS Architecture</a></li>
+                <h5 class="font-bold text-white mb-3 uppercase tracking-wider text-xs">Solutions</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="services.html" class="hover:text-brandAccent transition-colors">Intermodal Transport</a></li>
+                    <li><a href="https://fn-logistic-hub.onrender.com/" target="_blank" class="hover:text-brandAccent transition-colors">FN Logistic Hub Portal</a></li>
+                    <li><a href="https://pgease.pythonanywhere.com" target="_blank" class="hover:text-brandAccent transition-colors">MyPGEase PropTech</a></li>
+                    <li><a href="solutions.html" class="hover:text-brandAccent transition-colors">Custom SaaS Architecture</a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Corporate</h5>
-                <ul class="space-y-2.5 text-gray-400">
-                    <li><a href="about.html" class="hover:text-brandAccent">About Veloqix</a></li>
-                    <li><a href="contact.html" class="hover:text-brandAccent">Enterprise Sales</a></li>
-                    <li><a href="#" class="hover:text-brandAccent">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-brandAccent">Terms & Conditions</a></li>
+                <h5 class="font-bold text-white mb-3 uppercase tracking-wider text-xs">Corporate</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="about.html" class="hover:text-brandAccent transition-colors">About Veloqix</a></li>
+                    <li><a href="contact.html" class="hover:text-brandAccent transition-colors">Enterprise Sales</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-brandAccent transition-colors">Terms & Conditions</a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="font-bold text-white mb-4 uppercase tracking-wider text-xs sm:text-sm">Headquarters</h5>
-                <p class="text-gray-400 leading-relaxed mb-3">Veloqix Tech Hub, Gurugram, Haryana, India.</p>
+                <h5 class="font-bold text-white mb-3 uppercase tracking-wider text-xs">Headquarters</h5>
+                <p class="text-gray-400 leading-relaxed mb-2">Veloqix Tech Hub, Gurugram, Haryana, India.</p>
                 <p class="text-gray-400"><i class="fa-solid fa-envelope mr-1 text-brandAccent"></i> contact@veloqix.com</p>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16 pt-8 border-t border-gray-800 text-center text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-10 pt-6 border-t border-gray-800 text-center text-gray-500">
             © 2026 Veloqix Technologies. All rights reserved.
         </div>
     </footer>
 
-    <!-- INTERACTIVE SCRIPTS -->
+    <!-- SCRIPTS -->
     <script>
-        // Mobile Navigation Drawer Toggle
-        const menuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const menuIcon = document.getElementById('menuIcon');
-
-        if(menuBtn) {
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-                menuIcon.classList.toggle('fa-bars');
-                menuIcon.classList.toggle('fa-xmark');
-            });
+        // Modal functions
+        function openModal() { document.getElementById('leadModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('leadModal').classList.add('hidden'); }
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            alert('Offer claimed! Our team will send the trial details within 4 hours.');
+            closeModal();
+        }
+        function calculateEstimate() {
+            const base = parseFloat(document.getElementById('calcType').value);
+            const multiplier = parseFloat(document.getElementById('calcNodes').value);
+            const total = Math.round(base * multiplier);
+            document.getElementById('estCost').innerText = '$' + total.toLocaleString();
         }
 
-        // Interactive 3D Canvas Engine Script
-        (function() {
-            const canvas = document.getElementById('interactive3dCanvas');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            let width, height;
-            function resize() {
-                width = canvas.width = canvas.parentElement.clientWidth;
-                height = canvas.height = canvas.parentElement.clientHeight;
-            }
-            resize();
-            window.addEventListener('resize', resize);
+        // Mobile Menu Toggle Event Handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuIcon = document.getElementById('menuIcon');
 
-            // Generate 3D Sphere Mesh Points
-            const points = [];
-            const numPoints = 140;
-            const radius = 150;
-
-            for (let i = 0; i < numPoints; i++) {
-                const phi = Math.acos(-1 + (2 * i) / numPoints);
-                const theta = Math.sqrt(numPoints * Math.PI) * phi;
-                points.push({
-                    x: radius * Math.cos(theta) * Math.sin(phi),
-                    y: radius * Math.sin(theta) * Math.sin(phi),
-                    z: radius * Math.cos(phi)
+            if (mobileBtn && mobileMenu && menuIcon) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    menuIcon.classList.toggle('fa-bars');
+                    menuIcon.classList.toggle('fa-xmark');
                 });
             }
+        });
 
-            let rotX = 0;
-            let rotY = 0;
+        /* -------------------------------------------------------------
+           ENTERPRISE LOGISTICS MESH 3D MODEL SYSTEM (THREE.JS)
+           ------------------------------------------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('three-canvas');
+            const container = document.getElementById('heroSection');
 
-            let isDragging = false;
-            let lastMouseX = 0, lastMouseY = 0;
+            if (canvas && container && typeof THREE !== 'undefined') {
+                const scene = new THREE.Scene();
+                
+                const getWidth = () => container.clientWidth || window.innerWidth;
+                const getHeight = () => container.clientHeight || 500;
 
-            canvas.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                lastMouseX = e.clientX;
-                lastMouseY = e.clientY;
-            });
+                const camera = new THREE.PerspectiveCamera(55, getWidth() / getHeight(), 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
 
-            window.addEventListener('mouseup', () => isDragging = false);
+                renderer.setSize(getWidth(), getHeight());
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const dx = e.clientX - lastMouseX;
-                const dy = e.clientY - lastMouseY;
-                rotY += dx * 0.008;
-                rotX -= dy * 0.008;
-                lastMouseX = e.clientX;
-                lastMouseY = e.clientY;
-            });
+                const logisticsNetworkGroup = new THREE.Group();
 
-            // Touch events for mobile responsiveness
-            canvas.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) {
-                    isDragging = true;
-                    lastMouseX = e.touches[0].clientX;
-                    lastMouseY = e.touches[0].clientY;
+                // Central Wireframe Globe
+                const globeGeo = new THREE.SphereGeometry(3.2, 24, 24);
+                const globeMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true, transparent: true, opacity: 0.15 });
+                const globeMesh = new THREE.Mesh(globeGeo, globeMat);
+                logisticsNetworkGroup.add(globeMesh);
+
+                // Enterprise Hub Nodes
+                const nodeCount = 20;
+                const nodes = [];
+                const nodePositions = [];
+                const nodesGroup = new THREE.Group();
+
+                const nodeGeo = new THREE.SphereGeometry(0.08, 12, 12);
+                const nodeMat = new THREE.MeshBasicMaterial({ color: 0x34D399 });
+
+                for (let i = 0; i < nodeCount; i++) {
+                    const phi = Math.acos(-1 + (2 * i) / nodeCount);
+                    const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+                    
+                    const radius = 3.25;
+                    const x = radius * Math.cos(theta) * Math.sin(phi);
+                    const y = radius * Math.sin(theta) * Math.sin(phi);
+                    const z = radius * Math.cos(phi);
+
+                    const node = new THREE.Mesh(nodeGeo, nodeMat);
+                    node.position.set(x, y, z);
+                    nodesGroup.add(node);
+                    
+                    nodes.push(node);
+                    nodePositions.push(new THREE.Vector3(x, y, z));
                 }
-            });
+                logisticsNetworkGroup.add(nodesGroup);
 
-            window.addEventListener('touchend', () => isDragging = false);
+                // Connect Hub Nodes with Lines
+                const lineMat = new THREE.LineBasicMaterial({ color: 0x40B2E6, transparent: true, opacity: 0.35 });
+                const linesGeo = new THREE.BufferGeometry();
+                const linePositions = [];
 
-            canvas.addEventListener('touchmove', (e) => {
-                if (!isDragging || e.touches.length !== 1) return;
-                const dx = e.touches[0].clientX - lastMouseX;
-                const dy = e.touches[0].clientY - lastMouseY;
-                rotY += dx * 0.008;
-                rotX -= dy * 0.008;
-                lastMouseX = e.touches[0].clientX;
-                lastMouseY = e.touches[0].clientY;
-            });
-
-            function render() {
-                ctx.clearRect(0, 0, width, height);
-
-                if (!isDragging) {
-                    rotX += 0.003;
-                    rotY += 0.005;
-                }
-
-                const projected = [];
-
-                for (let i = 0; i < points.length; i++) {
-                    let p = points[i];
-
-                    // Rotate around X
-                    let y1 = p.y * Math.cos(rotX) - p.z * Math.sin(rotX);
-                    let z1 = p.y * Math.sin(rotX) + p.z * Math.cos(rotX);
-
-                    // Rotate around Y
-                    let x2 = p.x * Math.cos(rotY) + z1 * Math.sin(rotY);
-                    let z2 = -p.x * Math.sin(rotY) + z1 * Math.cos(rotY);
-
-                    // 3D Perspective Projection
-                    const fov = 300;
-                    const scale = fov / (fov + z2 + 200);
-                    const x2d = x2 * scale + width / 2;
-                    const y2d = y1 * scale + height / 2;
-
-                    projected.push({ x: x2d, y: y2d, scale: scale, z: z2 });
-                }
-
-                // Draw connecting 3D Mesh lines
-                ctx.strokeStyle = 'rgba(64, 178, 230, 0.18)';
-                ctx.lineWidth = 0.8;
-                for (let i = 0; i < projected.length; i++) {
-                    for (let j = i + 1; j < projected.length; j++) {
-                        const dx = projected[i].x - projected[j].x;
-                        const dy = projected[i].y - projected[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 45) {
-                            ctx.beginPath();
-                            ctx.moveTo(projected[i].x, projected[i].y);
-                            ctx.lineTo(projected[j].x, projected[j].y);
-                            ctx.stroke();
+                for (let i = 0; i < nodePositions.length; i++) {
+                    for (let j = i + 1; j < nodePositions.length; j++) {
+                        if (nodePositions[i].distanceTo(nodePositions[j]) < 3.2) {
+                            linePositions.push(nodePositions[i].x, nodePositions[i].y, nodePositions[i].z);
+                            linePositions.push(nodePositions[j].x, nodePositions[j].y, nodePositions[j].z);
                         }
                     }
                 }
+                linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+                const networkLines = new THREE.LineSegments(linesGeo, lineMat);
+                logisticsNetworkGroup.add(networkLines);
 
-                // Draw 3D Nodes
-                for (let i = 0; i < projected.length; i++) {
-                    const p = projected[i];
-                    const nodeSize = Math.max(1, 2.5 * p.scale);
-                    const alpha = Math.min(1, Math.max(0.2, (p.z + radius) / (2 * radius)));
+                // Telemetry Ring & Data Packages
+                const orbitGeo = new THREE.TorusGeometry(4.8, 0.02, 16, 100);
+                const orbitMat = new THREE.MeshBasicMaterial({ color: 0xFBBF24, transparent: true, opacity: 0.4 });
+                const orbitRing = new THREE.Mesh(orbitGeo, orbitMat);
+                orbitRing.rotation.x = Math.PI / 2.5;
+                logisticsNetworkGroup.add(orbitRing);
 
-                    ctx.fillStyle = i % 8 === 0 ? '#34D399' : '#40B2E6';
-                    ctx.globalAlpha = alpha;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, nodeSize, 0, Math.PI * 2);
-                    ctx.fill();
+                const dataBlockGroup = new THREE.Group();
+                const blockCount = 6;
+                const blocks = [];
+
+                for (let k = 0; k < blockCount; k++) {
+                    const boxGeo = new THREE.BoxGeometry(0.18, 0.18, 0.18);
+                    const boxMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true });
+                    const block = new THREE.Mesh(boxGeo, boxMat);
+                    dataBlockGroup.add(block);
+                    blocks.push(block);
                 }
-                ctx.globalAlpha = 1.0;
+                logisticsNetworkGroup.add(dataBlockGroup);
 
-                requestAnimationFrame(render);
+                scene.add(logisticsNetworkGroup);
+
+                function adjustCameraLayout() {
+                    const isMobile = window.innerWidth < 768;
+                    if (isMobile) {
+                        camera.position.set(0, 0, 11);
+                        logisticsNetworkGroup.position.set(0, 0, 0);
+                    } else {
+                        camera.position.set(3, 0, 8.5);
+                        logisticsNetworkGroup.position.set(3.2, 0, 0);
+                    }
+                    camera.lookAt(0, 0, 0);
+                }
+                adjustCameraLayout();
+
+                let mouseX = 0, mouseY = 0;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth) - 0.5;
+                    mouseY = (e.clientY / window.innerHeight) - 0.5;
+                });
+
+                let clock = new THREE.Clock();
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    const elapsedTime = clock.getElapsedTime();
+
+                    globeMesh.rotation.y += 0.002;
+                    nodesGroup.rotation.y += 0.003;
+                    networkLines.rotation.y += 0.003;
+                    orbitRing.rotation.z -= 0.0015;
+
+                    blocks.forEach((block, index) => {
+                        const angle = elapsedTime * 0.8 + (index * (Math.PI * 2 / blockCount));
+                        const radius = 4.8;
+                        block.position.x = Math.cos(angle) * radius;
+                        block.position.y = Math.sin(angle) * (radius * 0.4);
+                        block.position.z = Math.sin(angle) * radius;
+                        block.rotation.x += 0.02;
+                        block.rotation.y += 0.02;
+                    });
+
+                    logisticsNetworkGroup.rotation.y += (mouseX * 0.4 - logisticsNetworkGroup.rotation.y) * 0.05;
+                    logisticsNetworkGroup.rotation.x += (-mouseY * 0.4 - logisticsNetworkGroup.rotation.x) * 0.05;
+
+                    renderer.render(scene, camera);
+                }
+                animate();
+
+                window.addEventListener('resize', () => {
+                    const w = getWidth();
+                    const h = getHeight();
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(w, h);
+                    adjustCameraLayout();
+                });
             }
-
-            render();
-        })();
+        });
     </script>
 </body>
 </html>

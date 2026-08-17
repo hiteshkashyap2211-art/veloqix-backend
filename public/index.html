@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Updated Title & Primary SEO Meta Tags -->
+    <!-- Primary SEO Meta Tags -->
     <title>Veloqix Technologies | Integrated Container Logistics & Enterprise Supply Chain</title>
     <meta name="description" content="Veloqix Technologies provides enterprise-grade logistics software, fleet management systems, SaaS architecture, and supply chain tracking solutions by Hitesh Kashyap.">
     <meta name="keywords" content="Veloqix, Veloqix Technologies, Hitesh Kashyap Veloqix, Logistics SaaS, Fleet Software, Container Logistics">
@@ -22,19 +22,18 @@
     <meta name="twitter:title" content="Veloqix Technologies | Integrated Container Logistics">
     <meta name="twitter:description" content="Enterprise-grade logistics software and supply chain tracking solutions.">
 
-    <!-- Search Console Verification Tag (Preserved) -->
+    <!-- Search Console Verification Tag -->
     <meta name="google-site-verification" content="QPyUgwKV9DTpEcJVQJ6Df9TL1IdYjumzK0ZSKIh8zRM" />
 
-    <!-- Favicon / Logo for Google Search Results -->
+    <!-- Favicon / Logo -->
     <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/logo.png">
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
 
-    <!-- Organization Schema Markup for Google Knowledge / AI Overview -->
+    <!-- Organization Schema Markup -->
     <script type="application/ld+json">
-        
         {
         "@context": "https://schema.org",
         "@graph": [
@@ -68,11 +67,11 @@
         }
     </script>
     
-    <!-- Tailwind CSS CDN (Preserved) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome 6 Icons (Preserved) -->
+    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Three.js for Interactive 3D WebGL Graphics (Preserved) -->
+    <!-- Three.js for Interactive 3D WebGL Graphics -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
@@ -88,6 +87,16 @@
                     },
                     screens: {
                         'xs': '380px'
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1, filter: 'drop-shadow(0 0 8px rgba(64,178,230,0.6))' },
+                            '50%': { opacity: 0.7, filter: 'drop-shadow(0 0 2px rgba(64,178,230,0.2))' },
+                        }
                     }
                 }
             }
@@ -107,7 +116,7 @@
         }
         .tab-btn {
             position: relative;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
         .tab-btn.active {
             color: #00243A;
@@ -122,12 +131,16 @@
             height: 3px;
             background-color: #40B2E6;
             border-radius: 9999px;
+            box-shadow: 0 0 8px rgba(64,178,230,0.8);
+        }
+        .cap-tab {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .cap-tab.active {
             background-color: #00243A;
             color: #FFFFFF;
             border-color: #40B2E6;
-            box-shadow: 0 4px 12px rgba(0, 36, 58, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 36, 58, 0.2);
         }
         #hero-globe-3d {
             position: absolute;
@@ -136,33 +149,38 @@
             pointer-events: auto;
         }
         .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .glass-card-dark {
+            background: rgba(10, 18, 26, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
     </style>
 </head>
 <body class="bg-brandBg text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-brandAccent selection:text-brandMaersk">
 
     <!-- 1. GLOBAL ANNOUNCEMENT & SYSTEM TELEMETRY TICKER -->
-    <div class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-3 sm:px-6 flex justify-between items-center border-b border-gray-800 relative z-50">
+    <div class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-3 sm:px-6 flex justify-between items-center border-b border-gray-800/80 relative z-50">
         <div class="flex items-center gap-2 sm:gap-3 overflow-hidden whitespace-nowrap">
-            <span class="bg-brandAccent text-brandMaersk font-black px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] uppercase tracking-wider shrink-0 shadow-sm animate-pulse">Live Systems Online</span>
-            <span class="text-gray-300 truncate">Veloqix Corridors & Industrial Logistics Freight Hubs operating at 100% capacity.</span>
+            <span class="bg-brandAccent text-brandMaersk font-black px-2.5 py-0.5 rounded-full text-[8px] sm:text-[10px] uppercase tracking-wider shrink-0 shadow-sm animate-pulse">Live Systems Online</span>
+            <span class="text-gray-300 truncate font-medium">Veloqix Corridors & Industrial Logistics Freight Hubs operating at 100% capacity.</span>
         </div>
-        <div class="hidden md:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0">
-            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200"><i class="fa-solid fa-signal text-emerald-400 mr-1"></i> Telemetry Active</span>
-            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200"><i class="fa-solid fa-shield-halved mr-1"></i> AES-256 Encrypted</span>
-            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200"><i class="fa-solid fa-headset mr-1"></i> 24/7 Operations Desk</span>
+        <div class="hidden md:flex items-center gap-4 lg:gap-6 text-gray-300 shrink-0 font-medium">
+            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200 flex items-center"><i class="fa-solid fa-signal text-emerald-400 mr-1.5 animate-pulse"></i> Telemetry Active</span>
+            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200 flex items-center"><i class="fa-solid fa-shield-halved mr-1.5 text-brandAccent"></i> AES-256 Encrypted</span>
+            <span class="hover:text-brandAccent cursor-pointer transition-colors duration-200 flex items-center"><i class="fa-solid fa-headset mr-1.5"></i> 24/7 Operations Desk</span>
         </div>
     </div>
 
     <!-- 2. MAIN NAVIGATION NAVBAR -->
     <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex justify-between items-center">
-            <a href="index.html" class="text-lg sm:text-2xl font-black text-brandMaersk flex items-center gap-1.5 sm:gap-2 tracking-tight hover:opacity-90 transition">
-                <i class="fa-solid fa-asterisk text-brandAccent text-xl sm:text-3xl animate-spin-slow"></i> 
-                <span>VELOQIX <span class="text-[9px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded">TECHNOLOGIES</span></span>
+            <a href="index.html" class="text-lg sm:text-2xl font-black text-brandMaersk flex items-center gap-2 tracking-tight hover:opacity-90 transition group">
+                <i class="fa-solid fa-asterisk text-brandAccent text-xl sm:text-3xl animate-spin-slow group-hover:scale-110 transition-transform"></i> 
+                <span>VELOQIX <span class="text-[9px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 bg-brandMaersk text-white rounded tracking-widest">TECHNOLOGIES</span></span>
             </a>
 
             <!-- Desktop Navigation Links -->
@@ -210,22 +228,22 @@
                 <h1 class="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight drop-shadow-md">
                     Connecting logistics, workforce & infrastructure seamlessly.
                 </h1>
-                <p class="mt-4 sm:mt-5 text-gray-300 text-xs sm:text-base lg:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                <p class="mt-4 sm:mt-5 text-gray-300 text-xs sm:text-base lg:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
                     Veloqix Technologies integrates inland intermodal transport, verified warehouse workforce dispatch, and PropTech automation under one unified enterprise platform.
                 </p>
                 <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4">
-                    <a href="services.html" class="w-full sm:w-auto px-8 py-3.5 bg-brandAccent text-brandMaersk font-extrabold rounded-lg hover:bg-sky-400 hover:shadow-sky-500/25 transition shadow-lg text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center gap-2">
+                    <a href="services.html" class="w-full sm:w-auto px-8 py-3.5 bg-brandAccent text-brandMaersk font-extrabold rounded-xl hover:bg-sky-300 hover:shadow-sky-500/25 transition-all shadow-lg text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center gap-2 group">
                         <span>Explore Capabilities</span>
-                        <i class="fa-solid fa-arrow-right-long"></i>
+                        <i class="fa-solid fa-arrow-right-long group-hover:translate-x-1 transition-transform"></i>
                     </a>
-                    <a href="contact.html" class="w-full sm:w-auto px-8 py-3.5 border border-white/40 text-white font-bold rounded-lg hover:bg-white/10 hover:border-white transition text-xs sm:text-sm uppercase tracking-wider backdrop-blur-md text-center">
+                    <a href="contact.html" class="w-full sm:w-auto px-8 py-3.5 border border-white/40 text-white font-bold rounded-xl hover:bg-white/10 hover:border-white transition-all text-xs sm:text-sm uppercase tracking-wider backdrop-blur-md text-center">
                         Enterprise Sales
                     </a>
                 </div>
             </div>
 
-            <!-- MAERSK-STYLE INTERACTIVE TRACKING & SEARCH CONSOLE -->
-            <div class="lg:col-span-5 glass-panel text-gray-900 rounded-2xl p-5 sm:p-8 shadow-2xl relative z-20 border border-white/40 mt-4 lg:mt-0 pointer-events-auto">
+            <!-- INTERACTIVE TRACKING & SEARCH CONSOLE -->
+            <div class="lg:col-span-5 glass-panel text-gray-900 rounded-2xl p-5 sm:p-8 shadow-2xl relative z-20 border border-white/60 mt-4 lg:mt-0 pointer-events-auto">
                 <!-- Switcher Tabs -->
                 <div class="flex border-b border-gray-200/80 mb-5 gap-3 sm:gap-6 text-xs sm:text-sm font-bold text-gray-500 overflow-x-auto pb-1">
                     <button id="tabTrackBtn" onclick="switchTrackTab('track')" class="tab-btn active pb-3 flex items-center gap-2 shrink-0">
@@ -244,7 +262,7 @@
                     <div>
                         <label class="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Consignment Number, B/L or Job ID</label>
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="text" id="trackInput" placeholder="e.g. VLX-8802-NCR or Phone" class="w-full px-4 py-3 sm:py-3.5 border border-gray-300/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent focus:border-transparent text-xs sm:text-sm font-medium transition">
+                            <input type="text" id="trackInput" placeholder="e.g. VLX-8802-NCR or Phone" class="w-full px-4 py-3 sm:py-3.5 border border-gray-300/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent focus:border-transparent text-xs sm:text-sm font-medium transition bg-white/80">
                             <button id="trackSubmitBtn" onclick="handleTrackSearch()" class="w-full sm:w-auto px-7 py-3 sm:py-3.5 bg-brandMaersk text-white font-bold rounded-xl hover:bg-gray-800 transition active:scale-95 shrink-0 uppercase text-xs flex items-center justify-center gap-2 shadow-md">
                                 <span>Track</span>
                             </button>
@@ -263,11 +281,11 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Origin Hub</label>
-                            <input type="text" id="schedOrigin" placeholder="Farukhnagar / Delhi" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent">
+                            <input type="text" id="schedOrigin" placeholder="Farukhnagar / Delhi" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent bg-white/80 font-medium">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Destination Hub</label>
-                            <input type="text" id="schedDestination" placeholder="NCR / Regional ICD" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent">
+                            <input type="text" id="schedDestination" placeholder="NCR / Regional ICD" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent bg-white/80 font-medium">
                         </div>
                     </div>
                     <button onclick="handleScheduleSearch()" class="w-full py-3.5 bg-brandMaersk text-white text-xs font-bold uppercase rounded-xl hover:bg-gray-800 transition shadow-md">Search Corridors</button>
@@ -277,7 +295,7 @@
                 <div id="panelWorkforce" class="space-y-4 hidden">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Role / Industrial Skill</label>
-                        <select id="workforceRoleSelect" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent bg-white">
+                        <select id="workforceRoleSelect" class="w-full p-3 border border-gray-300/80 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brandAccent bg-white font-medium">
                             <option>Forklift Operators & Yard Staff</option>
                             <option>Warehouse Pickers & Packers</option>
                             <option>Heavy Vehicle Drivers (Commercial KYC)</option>
@@ -648,6 +666,52 @@
         </div>
     </div>
 
+    <!-- 11. INLAND SCHEDULE MODAL POP-UP -->
+    <div id="scheduleModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100 transform transition-all scale-95 duration-300" id="scheduleModalCard">
+            <button onclick="closeScheduleModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-sky-50 text-brandAccent flex items-center justify-center text-xl font-bold shadow-sm">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-brandMaersk">Active Corridor Schedules</h3>
+                    <p class="text-xs text-gray-500 font-medium">Inland Intermodal Freight Hubs</p>
+                </div>
+            </div>
+
+            <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 mb-5 flex justify-between items-center text-xs font-bold text-brandMaersk">
+                <span id="schedRouteOrigin">Farukhnagar</span>
+                <i class="fa-solid fa-truck-fast text-brandAccent text-base"></i>
+                <span id="schedRouteDest">Delhi NCR</span>
+            </div>
+
+            <div class="space-y-3 mb-6 text-xs">
+                <div class="p-3.5 bg-gray-50 rounded-xl border border-gray-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="font-black text-brandMaersk">Fleet Express #VLX-102</p>
+                        <p class="text-[10px] text-gray-500">Daily Dispatch • Intermodal Container</p>
+                    </div>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-[10px]">4 Slots Available</span>
+                </div>
+                <div class="p-3.5 bg-gray-50 rounded-xl border border-gray-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="font-black text-brandMaersk">Heavy Carrier #VLX-204</p>
+                        <p class="text-[10px] text-gray-500">Night Run • Dedicated Haulage</p>
+                    </div>
+                    <span class="px-3 py-1 bg-sky-100 text-brandMaersk font-bold rounded-lg text-[10px]">On Schedule</span>
+                </div>
+            </div>
+
+            <a href="contact.html" class="w-full py-3 bg-brandMaersk text-white text-xs font-bold rounded-xl hover:bg-brandDark transition shadow-md block text-center">
+                Book Corridor Slot via Enterprise Sales
+            </a>
+        </div>
+    </div>
+
     <!-- INTERACTIVE SCRIPTS -->
     <script>
         // Mobile Navbar Drawer Toggle
@@ -698,59 +762,72 @@
             try {
                 const response = await fetch('/api/v1/track/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ tracking_id: trackingId })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Server returned status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.success) {
-                    const data = result.data;
-                    
-                    const modalTrackingId = document.getElementById('modalTrackingId');
-                    if (modalTrackingId) {
-                        modalTrackingId.innerText = `Consignment #${data.tracking_id}`;
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        const data = result.data;
+                        document.getElementById('modalTrackingId').innerText = `Consignment #${data.tracking_id}`;
                         document.getElementById('modalStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${data.status}`;
                         document.getElementById('modalEta').innerText = data.eta;
                         document.getElementById('modalOrigin').innerHTML = `<i class="fa-solid fa-warehouse text-brandAccent mr-1"></i> ${data.origin}`;
                         document.getElementById('modalDestination').innerHTML = `<i class="fa-solid fa-location-crosshairs text-emerald-600 mr-1"></i> ${data.destination}`;
-
-                        const modal = document.getElementById('trackingModal');
-                        const modalCard = document.getElementById('modalCard');
-                        if (modal) {
-                            modal.classList.remove('hidden');
-                            setTimeout(() => {
-                                if (modalCard) modalCard.classList.remove('scale-95');
-                            }, 10);
-                        }
-                    } else {
-                        alert(`✅ Tracking Info:\n\nID: ${data.tracking_id}\nStatus: ${data.status}\nETA: ${data.eta}\nOrigin: ${data.origin}\nDestination: ${data.destination}`);
                     }
-                } else {
-                    alert(result.message || 'Tracking failed!');
                 }
             } catch (error) {
-                console.error('Track API Error:', error);
-                alert('Server connection failed! Please ensure Node.js server is running.');
+                console.log('Demo Mode: Launching Telemetry Modal View');
+                document.getElementById('modalTrackingId').innerText = `Consignment #${trackingId}`;
             } finally {
                 if (trackBtn) trackBtn.innerHTML = originalText;
+                openTrackingModal();
+            }
+        }
+
+        function openTrackingModal() {
+            const modal = document.getElementById('trackingModal');
+            const modalCard = document.getElementById('modalCard');
+            if (modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { if (modalCard) modalCard.classList.remove('scale-95'); }, 10);
             }
         }
 
         function closeTrackingModal() {
             const modal = document.getElementById('trackingModal');
             const modalCard = document.getElementById('modalCard');
-            
             if (modalCard) modalCard.classList.add('scale-95');
-            setTimeout(() => {
-                if (modal) modal.classList.add('hidden');
-            }, 150);
+            setTimeout(() => { if (modal) modal.classList.add('hidden'); }, 150);
+        }
+
+        // Schedule Modal Functions
+        function handleScheduleSearch() {
+            const origin = document.getElementById('schedOrigin')?.value.trim() || 'Farukhnagar';
+            const destination = document.getElementById('schedDestination')?.value.trim() || 'Delhi NCR';
+
+            document.getElementById('schedRouteOrigin').innerText = origin;
+            document.getElementById('schedRouteDest').innerText = destination;
+
+            const modal = document.getElementById('scheduleModal');
+            const modalCard = document.getElementById('scheduleModalCard');
+            if(modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { if (modalCard) modalCard.classList.remove('scale-95'); }, 10);
+            }
+        }
+
+        function closeScheduleModal() {
+            const modal = document.getElementById('scheduleModal');
+            const modalCard = document.getElementById('scheduleModalCard');
+            if (modalCard) modalCard.classList.add('scale-95');
+            setTimeout(() => { if (modal) modal.classList.add('hidden'); }, 150);
+        }
+
+        // Workforce Direct Route Fix
+        function handleWorkforceSelect() {
+            window.open('https://fn-logistic-hub.onrender.com/', '_blank');
         }
 
         // Capabilities Tab Switcher
@@ -786,13 +863,11 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Outer Globe
             const globeGeo = new THREE.IcosahedronGeometry(3.2, 3);
             const globeMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, wireframe: true, transparent: true, opacity: 0.35 });
             const globe = new THREE.Mesh(globeGeo, globeMat);
             scene.add(globe);
 
-            // Orbit Ring
             const ringGeo = new THREE.RingGeometry(4.2, 4.3, 64);
             const ringMat = new THREE.MeshBasicMaterial({ color: 0x40B2E6, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
             const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -829,46 +904,20 @@
             });
         })();
 
-        // Event Listener for Modal Overlay Click to Close
         document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('trackingModal');
-            if(modal) {
-                modal.addEventListener('click', (e) => {
-                    if(e.target === modal) closeTrackingModal();
+            const trackModal = document.getElementById('trackingModal');
+            if(trackModal) {
+                trackModal.addEventListener('click', (e) => {
+                    if(e.target === trackModal) closeTrackingModal();
+                });
+            }
+            const schedModal = document.getElementById('scheduleModal');
+            if(schedModal) {
+                schedModal.addEventListener('click', (e) => {
+                    if(e.target === schedModal) closeScheduleModal();
                 });
             }
         });
-
-        // Schedules Search Functionality
-        async function handleScheduleSearch() {
-            const origin = document.getElementById('schedOrigin')?.value.trim();
-            const destination = document.getElementById('schedDestination')?.value.trim();
-
-            if (!origin || !destination) {
-                alert('Please enter both Origin and Destination Hubs.');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/v1/schedules/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ origin, destination })
-                });
-                const result = await response.json();
-                alert(`Route: ${origin} ➔ ${destination}\nAvailable Corridors: ${result.count || 2} active fleets.`);
-            } catch (err) {
-                alert(`Searching corridors for ${origin} to ${destination}... (Connected)`);
-            }
-        }
-
-        // Workforce Direct Route
-        function handleWorkforceSelect() {
-            const roleSelect = document.getElementById('workforceRoleSelect');
-            const selectedRole = roleSelect ? roleSelect.value : '';
-            alert(`Redirecting to FN Portal with pre-selected role: ${selectedRole}`);
-            window.open('https://fnlogistics.example.com', '_blank');
-        }
     </script>
 </body>
 </html>
