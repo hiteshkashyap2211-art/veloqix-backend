@@ -493,11 +493,51 @@
         // Modal functions
         function openModal() { document.getElementById('leadModal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('leadModal').classList.add('hidden'); }
-        function handleFormSubmit(e) {
+        
+        // UPGRADED FORM SUBMISSION (CONNECTS DIRECTLY TO BACKEND API & ADMIN DASHBOARD)
+        async function handleFormSubmit(e) {
             e.preventDefault();
-            alert('Offer claimed! Our team will send the trial details within 4 hours.');
-            closeModal();
+            
+            const form = e.target;
+            const emailInput = form.querySelector('input[type="email"]');
+            const companyInput = form.querySelector('input[type="text"], select');
+            const messageInput = form.querySelector('textarea');
+
+            const emailVal = emailInput ? emailInput.value : "";
+            const companyVal = companyInput ? companyInput.value : "Not Specified";
+            const messageVal = messageInput ? messageInput.value : "Enterprise Offer Claimed from Solutions Page";
+
+            const payload = {
+                name: companyVal ? `Lead (${companyVal})` : "Enterprise Prospect",
+                email: emailVal,
+                company: companyVal,
+                message: messageVal
+            };
+
+            try {
+                const response = await fetch('/api/v1/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert('Offer claimed successfully! Our enterprise team will send the trial details within 4 hours.');
+                    form.reset();
+                    closeModal();
+                } else {
+                    alert('Submission failed: ' + (result.message || 'Please check input data and try again.'));
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                alert('Network connection error! Request server tak nahi pahunch saki.');
+            }
         }
+
         function calculateEstimate() {
             const base = parseFloat(document.getElementById('calcType').value);
             const multiplier = parseFloat(document.getElementById('calcNodes').value);
